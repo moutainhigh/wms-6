@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="maturity">
+
+	<sql id="queryMaturityList">
+		<![CDATA[
+			SELECT
+				mbb_.biz_code AS lenderCode,
+				mbb_.cust_name AS custName,
+				CONCAT('\t', mbb_.id_card) AS idCard,
+				mbb_.zip_code AS zipCode,
+				mbb_.cust_address AS custAddress,
+				p_.product_name AS productName,
+				ip_.init_total_amount AS initTotalAmount,
+				DATE_FORMAT(
+					ip_.interest_begin_time,
+					'%Y-%m-%d'
+				) AS interestBeginTime,
+				ip_.trans_creditor_amount AS transAmount,
+				ip_.trans_total_amount AS transTotalAmount,
+				CASE
+			WHEN ip_.product_id IN (13, 14, 15, 16, 34) THEN
+				if_.account_management_fee
+			ELSE
+				0
+			END AS serviceCharge,
+			 CASE
+			WHEN ip_.product_id IN (13, 14, 15, 16, 34) THEN
+				0
+			ELSE
+				if_.account_management_fee
+			END AS accountFee,
+			 cf_b_.account_name bankAccountName,
+			 CONCAT(
+				fb_b_.bank_name,
+				cf_b_.sub_bank
+			) bankAccount,
+			 CONCAT('\t', cf_b_.account_num) bankAccountNum,
+			 ip_.bill_day AS billDay,
+			 DATE_FORMAT(ip_.trans_time, '%Y-%m-%d') AS transTime
+			FROM
+				t_investment_pool ip_
+			LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+			AND mbb_.biz_category = 2
+			LEFT JOIN t_lender_apply la_ ON la_.lender_apply_id = mbb_.biz_id
+			LEFT JOIN t_product p_ ON p_.product_id = ip_.product_id
+			LEFT JOIN t_investment_fund if_ ON ip_.investment_pool_id = if_.investment_pool_id
+			AND if_.is_current = 1
+			LEFT JOIN t_cust_finance cf_b_ ON mbb_.biz_id = cf_b_.lender_apply_id
+			AND cf_b_.account_category = 2
+			LEFT JOIN ccs.t_finance_bank fb_b_ ON cf_b_.bank_category = fb_b_.finance_bank_id
+			WHERE
+				1=1
+			AND	ip_.current_period > ip_.init_period
+			AND ip_.product_id not in(11,12)
+			AND ip_.data_status = 'S'
+			<#if lenderCode ?exists && lenderCode!="">
+				AND mbb_.biz_code = :lenderCode
+			</#if>
+			<#if idCard ?exists && idCard!="">
+				AND mbb_.id_card = :idCard
+			</#if>
+			<#if productName ?exists && productName!="">
+				AND p_.product_name = :productName
+			</#if>
+			<#if billdayDay ?exists && billdayDay!="">
+				AND ip_.bill_day = :billdayDay
+			</#if>
+			<#if transTimeBegin ?exists && transTimeBegin!="" && transTimeEnd ?exists && transTimeEnd!="">
+				AND ip_.trans_time >= :transTimeBegin
+				AND ip_.trans_time <= :transTimeEnd
+			</#if>
+			ORDER BY ip_.trans_time DESC
+    	]]>
+	</sql>
+</sqlMap>

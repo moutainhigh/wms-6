@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchBizBase">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			mbb_.*
+		FROM
+			t_match_biz_base mbb_
+		WHERE 
+			mbb_.data_status != 'D'
+		AND	
+			mbb_.match_biz_base_id = :id
+    	]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT
+			mbb_.*
+		FROM
+			t_match_biz_base mbb_
+		WHERE 
+			mbb_.data_status != 'D'
+		]]>
+	</sql>
+
+	<sql id="query">
+		<![CDATA[
+    	SELECT
+			mbb_.*
+		FROM
+			t_match_biz_base mbb_
+		WHERE
+			mbb_.data_status != 'D'
+		<#if bizCustCode?exists && bizCustCode!="">	
+			AND	mbb_.biz_cust_code = :bizCustCode
+		</#if>	
+		<#if bizCode?exists && bizCode!="">	
+			AND	mbb_.biz_code = :bizCode
+		</#if>	
+		<#if bizId?exists && bizId!="">	
+			AND	mbb_.biz_id = :bizId
+		</#if>
+		<#if category?exists && category!="">
+			AND	mbb_.biz_category = :category
+		</#if>	
+		]]>
+	</sql>
+	
+	<sql id="queryProduct">
+		<![CDATA[
+    	SELECT
+			mbb_.*
+		FROM
+			t_match_biz_base mbb_
+		LEFT JOIN t_investment_pool ip_ ON mbb_.match_biz_base_id = ip_.match_biz_base_id		
+		WHERE
+			mbb_.biz_product_id IN (11,12)
+		AND mbb_.biz_product_id = ip_.product_id
+		<#if poolId?exists && poolId!="">
+			AND	ip_.investment_pool_id = :poolId
+		</#if>	
+		]]>
+	</sql>
+</sqlMap>	  		

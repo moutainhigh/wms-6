@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    http://www.springframework.org/schema/beans/spring-beans.xsd        
+    http://code.alibabatech.com/schema/dubbo        
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!--消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+	<dubbo:application name="consumer-of-wms-app" />
+
+	<dubbo:registry address="${component.dubbo.common.ipAddressList}" />
+
+	<!--生成远程服务代理，可以和本地bean一样使用demoService -->
+	<dubbo:reference id="amService" interface="com.dx.ccs.service.IAMService" />
+	<dubbo:reference id="productService"
+		interface="com.dx.wms.service.IProductService" check="false"/>
+	<dubbo:reference id="refundTimeService"
+		interface="com.dx.wms.service.IRefundTimeService" />
+	<dubbo:reference id="fileService" interface="com.dx.cms.service.IFileService" />
+	<dubbo:reference id="lenderManagermentService"
+		interface="com.dx.wms.service.ILenderManagermentService" />
+	<dubbo:reference id="lenderPushService"
+		interface="com.dx.wms.service.push.ILenderPushService" />
+	<dubbo:reference id="lenderApplyLogPubService"
+		interface="com.dx.wms.service.ILenderLogService" />
+	<dubbo:reference id="processService"
+		interface="com.dx.bpm.service.IProcessService" />
+	<dubbo:reference id="taskService" interface="com.dx.bpm.service.ITaskService" />
+	<dubbo:reference id="processDefinitionService"
+		interface="com.dx.bpm.service.IProcessDefinitionService" />
+	<dubbo:reference id="creditService"
+		interface="com.dx.cmm.service.credit.ICreditService" />
+	<dubbo:reference id="investService"
+		interface="com.dx.cmm.service.invest.IInvestService" />
+	<dubbo:reference id="matchPushService"
+		interface="com.dx.cmm.service.IMatchPushService" />
+	<dubbo:reference id="financeDataProcessService"
+		interface="com.dx.fms.service.api.IFinanceDataProcessService" check="false" />
+	<dubbo:reference id="financeCustomerInfoService"
+		interface="com.dx.fms.service.api.IFinanceCustomerInfoService" check="false" />
+	<dubbo:reference id="financeBankInfoService"
+		interface="com.dx.fms.service.api.IFinanceBankInfoService" check="false"/>
+	<dubbo:reference id="orgService" interface="com.dx.hr.service.api.IOrgService" check="false"/>
+	<dubbo:reference id="positionService"
+		interface="com.dx.hr.service.api.IPositionService" check="false"/>
+	<dubbo:reference id="employeeService"
+		interface="com.dx.hr.service.api.IEmployeeService" check="false"/>
+	<dubbo:reference id="employeeProcessService"
+		interface="com.dx.hr.service.api.IEmployeeProcessService" check="false" />
+	<dubbo:reference id="codeRuleService"
+		interface="com.dx.rule.service.ICodeRuleService" check="false" />
+	<dubbo:reference id="ruleInfoService"
+		interface="com.dx.rule.service.IRuleInfoService" check="false" />
+	<dubbo:reference id="ruleTriggerEngineService"
+		interface="com.dx.rule.service.IRuleTriggerEngineService" check="false" />
+	<dubbo:reference id="lenderApplyService"
+		interface="com.dx.wms.service.apply.ILenderApplyService" />
+	<dubbo:reference id="matchResService"
+		interface="com.dx.cmm.service.match.IMatchResService" />
+	<dubbo:reference id="matchBackService"
+		interface="com.dx.cmm.service.back.IMatchBackService" />
+	<dubbo:reference id="blockService"
+		interface="com.dx.cmm.service.block.IBlockService" />
+	<dubbo:reference id="transService"
+		interface="com.dx.cmm.service.trans.IMatchTransService" />
+	<dubbo:reference id="interestGateway"
+		interface="com.dx.cmm.service.interest.InterestService" />	
+	<dubbo:reference id="pastReportService"
+		interface="com.dx.cmm.service.report.IPastReportService" />	
+	<dubbo:reference id="fundReportService"
+		interface="com.dx.cmm.service.report.IFundReportService" />	
+	<dubbo:reference id="pastViewService"
+		interface="com.dx.cmm.service.report.IPastViewService" />	
+	<dubbo:reference id="maturityService"
+		interface="com.dx.cmm.service.report.IMaturityService" />	
+	<dubbo:reference id="missionRequestService"
+		interface="com.dx.dcs.service.IMissionRequestService" check="false"/>
+	<dubbo:reference id="infoManageService"
+		interface="com.dx.cmm.service.infoManage.InfoManageService" />	
+	<dubbo:reference id="financeDataProcessRestService"
+		interface="cn.creditrest.finance.api.service.IFinanceDataProcessRestService" check="false"/>
+</beans>

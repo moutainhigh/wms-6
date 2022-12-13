@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="fileType">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELEC
+			file_type_id,
+			file_type_name,
+			file_type_key,
+			file_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file_type
+			WHERE 
+				file_type_id = :id
+		]]>
+	</sql>		
+
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		file_type_id,
+			file_type_name,
+			file_type_key,
+			file_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file_type
+		WHERE data_status = 'A'
+		]]>
+	</sql>  
+	
+	<sql id="queryFileTypeByKey">
+		<![CDATA[
+    	SELECT
+			*
+		FROM
+			t_file_type ft
+		WHERE
+			1 = 1
+		<#if fileTypeKey?exists>
+            AND ft.file_type_key = :fileTypeKey
+        </#if> 	
+		]]>
+	</sql>   
+	
+	
+
+	  
+</sqlMap>	  

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custInfoRecord">
+
+<!-- 信息变更根据页面查询 -->
+	<sql id="queryForPage">
+		<![CDATA[
+			SELECT 
+				ca.lender_cust_code,
+				ca.cust_name,
+				cl.content,
+				cl.create_time
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_change_log cl ON ca.cust_account_id = cl.pk_id
+			WHERE 
+				1=1
+				<#if pkId?exists && pkId!="">
+		          AND pk_id = :pkId
+		        </#if>
+			ORDER BY cl.create_time DESC
+        ]]>
+	</sql>  
+	<!-- 投资变更根据页面查询 -->
+	<sql id="queryInvestForPage">
+		<![CDATA[
+			SELECT 
+				ca.cust_name,
+				la.lender_code,
+				cl.content,
+				cl.create_time
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_change_log cl ON la.lender_apply_id = cl.pk_id
+			LEFT JOIN t_cust_account ca ON ca.cust_account_id = la.cust_account_id
+			WHERE 
+				1=1
+				<#if pkId?exists && pkId!="">
+		          AND pk_id = :pkId
+		        </#if>
+			ORDER BY cl.create_time DESC
+        ]]>
+	</sql> 
+		
+</sqlMap>	

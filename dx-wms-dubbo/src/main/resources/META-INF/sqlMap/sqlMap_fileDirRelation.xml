@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="fileDirRelation">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			file_dir_relation_id,
+			file_dir_id,
+			file_id,
+			file_save_dir,
+			file_nickname,
+			app_code,
+			open_code,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file_dir_relation
+			WHERE 
+				file_dir_relation_id = :id
+    	]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		file_dir_relation_id,
+			file_dir_id,
+			file_id,
+			file_save_dir,
+			file_nickname,
+			app_code,
+			open_code,
+			create_user,
+			create_time,
+			update_user,
+			update_time,s
+			data_status
+		FROM t_file_dir_relation
+		]]>
+	</sql>    
+</sqlMap>	 	

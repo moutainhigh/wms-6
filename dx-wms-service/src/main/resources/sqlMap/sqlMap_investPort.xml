@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="investPort">
+
+	<sql id="current">
+		<![CDATA[
+		SELECT
+			MAX(report_day) reportDate
+		FROM
+			t_investment_fund
+		WHERE
+			investment_fund_day = :port
+		]]>
+	</sql>
+</sqlMap>	

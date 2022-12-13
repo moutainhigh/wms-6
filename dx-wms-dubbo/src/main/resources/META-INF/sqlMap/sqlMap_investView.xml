@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="investView">
+
+	<sql id="query">
+		<![CDATA[
+		SELECT
+			ip_.investment_pool_id poolId,
+			ip_.current_period currentPeriod,
+			mra_.transfer_total_amount transferTotalAmount,
+			mra_.pay_give_amount payGiveAmount,
+			ip_.init_total_amount initTotalAmount,
+			ip_.product_id productId,
+			mbb_.id_card idCard,
+			mbb_.biz_code lenderCode,
+			mbb_.biz_cust_code lenderCustCode,
+			ip_.interest_begin_time effectTime,
+			ip_.trans_time dueTime,
+			ip_.bill_day billPort,
+			ip_.pay_time payTime,
+			ip_.pay_total_amount payAmount
+		FROM
+			t_match_biz_base mbb_
+		LEFT JOIN t_investment_pool ip_ ON mbb_.match_biz_base_id = ip_.match_biz_base_id
+		LEFT JOIN (
+			SELECT
+				SUM(mr_.transfer_total_amount) transfer_total_amount,
+				SUM(mr_.pay_give_amount) pay_give_amount,
+				mr_.investment_pool_id,
+				mr_.current_period
+			FROM
+				t_match_result mr_
+			GROUP BY
+				mr_.investment_pool_id,
+				mr_.current_period
+		) mra_ ON ip_.investment_pool_id = mra_.investment_pool_id
+		AND ip_.current_period = mra_.current_period
+		WHERE
+			mbb_.biz_category = 2
+		AND mbb_.biz_code = :lenderCode
+		]]>
+	</sql>
+
+	<sql id="queryPool">
+		<![CDATA[
+		SELECT
+			mbb.biz_id bizId,
+			mbb.biz_cust_code lenderCustCode,
+			mbb.apply_date applyDate,
+			mbb.biz_code lenderCode,
+			mbb.cust_name custName,
+			ca.sex sex,
+			mbb.id_card idCard,
+			p.product_name productName,
+			ip.init_total_amount initTotalAmount,
+			mbb.cust_category custCategory,
+			mbb.biz_date_begin bizDateBegin,
+			mbb.biz_date_end bizDateEnd,
+			ip.interest_begin_time effectTime,
+			l.pay_way_id payWay,
+			cf1.bank_category buckleBankCategory,
+			cf1.sub_bank buckleSubBank,
+			cf1.account_num buckleAccountNum,
+			cf1.account_name buckleAccountName,
+			cf2.bank_category returnBankCategory,
+			cf2.sub_bank returnSubBank,
+			cf2.account_num returnAccountNum,
+			cf2.account_name returnAccountName,
+			mbb.cust_address custAddress,
+			mbb.zip_code zipCode,
+			l.team_id teamId,
+			ca.create_user managerId,
+			l.org_id orgId,
+			ca.msg_way msgWay,
+			mbb.email email,
+			mbb.mobile mobile,
+			ip.bill_day billDay,
+			ip.init_match_time initMatchTime
+		FROM
+			t_investment_pool ip
+		LEFT JOIN t_match_biz_base mbb ON ip.match_biz_base_id = mbb.match_biz_base_id
+		LEFT JOIN t_product p ON ip.product_id = p.product_id
+		LEFT JOIN t_lender_apply l ON mbb.biz_id = l.lender_apply_id
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				t_cust_finance cf
+			WHERE
+				cf.account_category = 1
+		) cf1 ON l.lender_apply_id = cf1.lender_apply_id
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				t_cust_finance cf
+			WHERE
+				cf.account_category = 2
+		) cf2 ON l.lender_apply_id = cf2.lender_apply_id
+		LEFT JOIN t_cust_account ca ON l.lender_cust_code = ca.lender_cust_code
+		WHERE
+			ip.init_match_time IS NOT NULL
+		<#if idCard?exists && idCard!="">
+			AND	mbb.id_card = :idCard
+		</#if>
+		<#if lenderCode?exists && lenderCode!="">
+			AND mbb.biz_code = :lenderCode
+		</#if>
+		<#if initMatchDateBegin?exists && initMatchDateBegin!="">
+			AND ip.init_match_time >= :initMatchDateBegin
+		</#if>
+		<#if initMatchDateEnd?exists && initMatchDateEnd!="">
+			AND ip.init_match_time <= :initMatchDateEnd
+		</#if>
+		ORDER BY
+			ip.init_match_time DESC
+		]]>
+	</sql>
+	
+		<sql id="queryMatching">
+		<![CDATA[
+		SELECT
+			mbb.biz_id bizId,
+			mbb.biz_cust_code lenderCustCode,
+			mbb.apply_date applyDate,
+			mbb.biz_code lenderCode,
+			mbb.cust_name custName,
+			ca.sex sex,
+			mbb.id_card idCard,
+			p.product_name productName,
+			ip.init_total_amount initTotalAmount,
+			mbb.cust_category custCategory,
+			mbb.biz_date_begin bizDateBegin,
+			mbb.biz_date_end bizDateEnd,
+			ip.interest_begin_time effectTime,
+			l.pay_way_id payWay,
+			cf1.bank_category buckleBankCategory,
+			cf1.sub_bank buckleSubBank,
+			cf1.account_num buckleAccountNum,
+			cf1.account_name buckleAccountName,
+			cf2.bank_category returnBankCategory,
+			cf2.sub_bank returnSubBank,
+			cf2.account_num returnAccountNum,
+			cf2.account_name returnAccountName,
+			mbb.cust_address custAddress,
+			mbb.zip_code zipCode,
+			l.team_id teamId,
+			ca.create_user managerId,
+			l.org_id orgId,
+			ca.msg_way msgWay,
+			mbb.email email,
+			mbb.mobile mobile,
+			ip.bill_day billDay,
+			ip.init_match_time initMatchTime
+		FROM
+			t_investment_pool ip
+		LEFT JOIN t_match_biz_base mbb ON ip.match_biz_base_id = mbb.match_biz_base_id
+		LEFT JOIN t_product p ON ip.product_id = p.product_id
+		LEFT JOIN t_lender_apply l ON mbb.biz_id = l.lender_apply_id
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				t_cust_finance cf
+			WHERE
+				cf.account_category = 1
+		) cf1 ON l.lender_apply_id = cf1.lender_apply_id
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				t_cust_finance cf
+			WHERE
+				cf.account_category = 2
+		) cf2 ON l.lender_apply_id = cf2.lender_apply_id
+		LEFT JOIN t_cust_account ca ON l.lender_cust_code = ca.lender_cust_code
+		WHERE
+			ip.init_match_time IS NOT NULL
+		<#if idCard?exists && idCard!="">
+			AND	mbb.id_card = :idCard
+		</#if>
+		<#if lenderCode?exists && lenderCode!="">
+			AND mbb.biz_code = :lenderCode
+		</#if>
+		<#if lenderCodes?exists && (lenderCodes?size>0) >
+			AND mbb.biz_code IN (:lenderCodes)
+		</#if>
+		<#if initMatchDateBegin?exists && initMatchDateBegin!="">
+			AND ip.init_match_time >= :initMatchDateBegin
+		</#if>
+		<#if initMatchDateEnd?exists && initMatchDateEnd!="">
+			AND ip.init_match_time <= :initMatchDateEnd
+		</#if>
+			AND ip.data_status  IN ('S','P')
+		ORDER BY
+			ip.init_match_time DESC
+		]]>
+	</sql>
+	
+	<sql id="queryStat">
+		<![CDATA[
+		SELECT
+			t.date date,
+			IFNULL(a.num, -1) num1,
+			IFNULL(a.amount, -1) amount1,
+			IFNULL(b.num, -1) num16,
+			IFNULL(b.amount, -1) amount16
+		FROM
+			(
+				SELECT
+					DATE(init_match_time) date
+				FROM
+					t_investment_pool
+				WHERE
+					init_match_time IS NOT NULL 
+					<#if initMatchDateBegin?exists && initMatchDateBegin!="">
+						AND DATE(init_match_time) >= DATE(:initMatchDateBegin) 
+					</#if>
+					<#if initMatchDateEnd?exists && initMatchDateEnd!="">
+						AND DATE(init_match_time) <= DATE(:initMatchDateEnd) 
+					</#if>
+				GROUP BY
+					DATE(init_match_time),
+					bill_day
+				ORDER BY
+					DATE(init_match_time) DESC
+			) t
+		LEFT JOIN (
+			SELECT
+				DATE(init_match_time) date,
+				COUNT(investment_pool_id) num,
+				SUM(init_total_amount) amount
+			FROM
+				t_investment_pool
+			WHERE
+				init_match_time IS NOT NULL
+			AND bill_day = '1' 
+			<#if initMatchDateBegin?exists && initMatchDateBegin!="">
+			AND DATE(init_match_time) >= DATE(:initMatchDateBegin) 
+			</#if>
+			<#if initMatchDateEnd?exists && initMatchDateEnd!="">
+			AND DATE(init_match_time) <= DATE(:initMatchDateEnd)  
+			</#if>
+			GROUP BY
+				DATE(init_match_time),
+				bill_day
+			ORDER BY
+				DATE(init_match_time) DESC
+		) a ON t.date = a.date
+		LEFT JOIN (
+			SELECT
+				DATE(init_match_time) date,
+				COUNT(investment_pool_id) num,
+				SUM(init_total_amount) amount
+			FROM
+				t_investment_pool
+			WHERE
+				init_match_time IS NOT NULL
+			AND bill_day = '16' 
+			<#if initMatchDateBegin?exists && initMatchDateBegin!="">
+			AND DATE(init_match_time) >= DATE(:initMatchDateBegin)  
+			</#if>
+			<#if initMatchDateEnd?exists && initMatchDateEnd!="">
+			AND DATE(init_match_time) <= DATE(:initMatchDateEnd) 
+			</#if>
+			GROUP BY
+				DATE(init_match_time),
+				bill_day
+			ORDER BY
+				DATE(init_match_time) DESC
+		) b ON t.date = b.date
+		WHERE
+			1 = 1
+		]]>
+	</sql>
+	<sql id="queryProduct">
+		<![CDATA[
+			SELECT
+				ip_.investment_pool_id poolId,
+				mbb_.cust_name custName,
+				mbb_.biz_code lenderCode,
+				mbb_.biz_cust_code lenderCustCode,
+				mbb_.id_card idCard,
+				ip_.init_total_amount initTotalAmount,
+				ip_.product_id productId,
+				ip_.current_total_amount currentTotalAmount,
+				ip_.init_match_time date,
+				ip_.bill_day billDay,
+				ip_.interest_begin_time interestBeginTime
+			FROM
+				t_investment_pool ip_
+			LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+			WHERE
+				ip_.product_id IN (11, 12)
+			AND ip_.version_key = 'V1.0' 
+			AND ip_.data_status NOT IN ('T', 'F', 'D', 'O')
+			<#if custName?exists && custName!="">
+			AND mbb_.cust_name = :custName
+			</#if>
+			<#if lenderCode?exists && lenderCode!="">
+			AND mbb_.biz_code = :lenderCode
+			</#if>
+		]]>
+	</sql>
+	<sql id="updateProduct">
+		<![CDATA[
+		UPDATE 
+			t_investment_pool
+		SET 
+			product_id = :productId
+		WHERE
+			investment_pool_id = :poolId	
+		]]>
+	</sql>
+</sqlMap>	

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="invokeLog">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			pay_way_id,
+			lender_code,
+			invoke_result,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+			WHERE
+				AND invoke_log_id = :id
+		]]>
+	</sql>	
+	
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			pay_way_id,
+			invoke_result,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+		]]>
+	</sql>   
+	
+	<!-- 统计存在流水号个数 -->
+	<sql id="hasInvokeLogCode">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			invoke_result,
+			pay_way_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_invoke_log
+		WHERE
+			invoke_log_code = :invokeLogCode
+		]]>
+	</sql>  
+	
+	<!-- 查询流水号对应调用日志 -->
+	<sql id="queryByInvokeLogCode">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			invoke_result,
+			pay_way_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+			WHERE 
+				invoke_log_code = :invokeLogCode
+		]]>
+	</sql>  
+	<!-- 查询理财申请编号对应调用数据 -->
+	<sql id="queryByLenderApplyId">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			invoke_result,
+			create_user,
+			pay_way_id,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+			WHERE  
+				data_status = 'A'
+				AND lender_apply_id = :lenderApplyId
+			ORDER BY
+				create_time DESC
+			LIMIT 1
+		]]>
+	</sql> 
+	<!-- 查询理财申请编号对应调用数据 -->
+	<sql id="queryAllByLenderApplyId">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			pay_way_id,
+			invoke_result,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+			WHERE  
+				lender_apply_id = :lenderApplyId
+			ORDER BY
+				create_time DESC
+			LIMIT 1
+		]]>
+	</sql> 
+	 
+    <!-- 根据调用日志CODE修改调用日志记录的状态-->>
+     <sql id="setInvokeLogStatusByCode">
+	    <![CDATA[
+	       	UPDATE t_invoke_log
+				SET data_status = :dataStatus
+			WHERE
+				invoke_log_code = :invokeLogCode
+    	]]>     
+    </sql>	 
+    <!-- 查询理财申请编号对应调用失败数据 -->
+	<sql id="queryFailByLenderApplyId">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			invoke_result,
+			pay_way_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_invoke_log
+		WHERE
+			data_status = 'D'
+		AND lender_apply_id = :lenderApplyId
+		ORDER BY
+			create_time DESC
+		LIMIT 1
+		]]>
+	</sql> 
+</sqlMap>	

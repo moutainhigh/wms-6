@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custAccount">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+	<![CDATA[
+		SELECT
+			cust_account_id,
+			lender_cust_code,
+			cust_code,
+			cust_name,
+			cust_name_spell,
+			sex,
+			nationality,
+			common_language,
+			marital_status,
+			id_type,
+			id_card,
+			birth_date,
+			mobile,
+			education,
+			msg_way,
+			cust_source,
+			cust_source_other,
+			open_date,
+			cust_category,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			account_time
+		FROM t_cust_account
+			WHERE 
+				cust_account_id = :id
+		]]>
+	</sql>
+
+	<sql id="queryAll">
+	<![CDATA[
+		SELECT
+			cust_account_id,
+			lender_cust_code,
+			cust_code,
+			cust_name,
+			cust_name_spell,
+			sex,
+			nationality,
+			common_language,
+			marital_status,
+			id_type,
+			id_card,
+			birth_date,
+			mobile,
+			education,
+			msg_way,
+			cust_source,
+			cust_source_other,
+			open_date,
+			cust_category,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			account_time
+		FROM t_cust_account
+		]]>
+	</sql>
+
+	<!-- 根据客户信息查询 -->
+	<sql id="checkCustInfo">
+    <![CDATA[
+		SELECT
+            cust_account_id,
+            lender_cust_code,
+            cust_name,
+            cust_code,
+            cust_name_spell,
+            sex,
+            nationality,
+            common_language,
+            marital_status,
+            id_type,
+            id_card,
+            birth_date,
+            mobile,
+            education,
+            msg_way,
+            cust_source,
+            cust_source_other,
+            open_date,
+            cust_category,
+            team_id,
+            org_id,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status,
+            account_time
+        FROM t_cust_account
+             WHERE 1=1 
+            AND  (data_status != 'D')
+             <#if idCard?exists && idCard!="">
+            AND id_card = :idCard
+            </#if> 
+            <#if mobile?exists && mobile!="">
+            AND mobile = :mobile
+            </#if> 
+        ]]>
+	</sql>
+
+	<!-- 根据 客户ID 更新客户编号setLenderCustCodeById -->
+	<sql id="updateCodeById">
+      <![CDATA[
+          UPDATE 
+          	t_cust_account
+		  SET 
+		  	lender_cust_code = :code
+		  WHERE
+		  	cust_account_id = :id
+          ]]>
+	</sql>
+
+	<sql id="queryForCustCodes">
+	    <![CDATA[
+	        SELECT 
+			ca.cust_code
+		FROM
+			t_cust_account ca
+			WHERE
+			ca.cust_code != ""
+			AND ca.create_user =:userId
+			AND ca.data_status = 'A'
+     	]]>
+	</sql>
+	<!-- 根据客户账户编号更改客户状态 -->
+	>
+	<sql id="changeStatusByCustAccountId">
+	    <![CDATA[
+	       UPDATE t_cust_account
+	       SET data_status = :dataStatus
+	       WHERE cust_account_id =  :custAccountId
+    	]]>
+	</sql>
+
+	<!-- 根据客户编号统计客户账户个数 -->
+	<sql id="checkCustCodeExist">
+	    <![CDATA[
+	       SELECT
+				COUNT(1) 'custAccountNumber'
+			FROM
+				t_cust_account
+			WHERE
+				cust_code  = :custCode
+    	]]>
+	</sql>
+
+
+	<sql id="queryCustIdByCode">
+	    <![CDATA[
+	       SELECT
+				ca.cust_account_id,
+				ca.lender_cust_code,
+				ca.data_status
+			FROM
+				t_cust_account ca
+			WHERE
+				ca.lender_cust_code = :lenderCustCode
+			LIMIT 0,1
+    	]]>
+	</sql>
+
+	<!-- 开户用户转移 -->
+	<sql id="updateCreateUserAndOrg">
+	    <![CDATA[
+	       UPDATE t_cust_account
+		   SET create_user = :createUser,
+		   update_time = update_time,
+		   org_id = :orgId,
+		   team_id = :teamId
+		   WHERE
+			   cust_account_id = :custAccountId
+		   AND (data_status IS NOT NULL AND data_status != 'D')
+    	]]>
+	</sql>
+
+
+	<sql id="queryCustAccountByLenderApply">
+	    <![CDATA[
+	       SELECT
+				ca.lender_cust_code,
+				ca.cust_name,
+				ca.cust_account_id,
+				ca.cust_name_spell,
+				ca.sex,
+				ca.nationality,
+				ca.common_language,
+				ca.marital_status,
+				ca.id_type,
+				ca.id_card,
+				ca.birth_date,
+				ca.mobile,
+				ca.education,
+				ca.msg_way,
+				ca.cust_source,
+				ca.cust_source_other,
+				ca.open_date,
+				ca.cust_category,
+				ca.team_id,
+				ca.org_id,
+				ca.create_user,
+				ca.create_time,
+				ca.update_user,
+				ca.update_time,
+				ca.data_status,
+				ca.account_time
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca ON la.lender_cust_code = ca.lender_cust_code
+			WHERE 
+				1=1
+				AND la.lender_apply_id = :lenderApplyId
+	       
+    	]]>
+	</sql>
+	<sql id="queryCustAccount">
+	<![CDATA[
+		SELECT 
+			ca.cust_account_id,
+			ca.lender_cust_code,
+			ca.cust_code,
+			ca.cust_name,
+			ca.cust_name_spell,
+			ca.sex,
+			ca.nationality,
+			ca.common_language,
+			ca.marital_status,
+			ca.id_type,
+			ca.id_card,
+			ca.birth_date,
+			ca.mobile,
+			ca.education,
+			ca.msg_way,
+			ca.cust_source,
+			ca.cust_source_other,
+			ca.open_date,
+			ca.cust_category,
+			ca.team_id,
+			ca.org_id,
+			ca.create_user,
+			ca.create_time,
+			ca.update_user,
+			ca.update_time,
+			ca.data_status,
+			ca.account_time
+		FROM
+			t_cust_account ca
+		WHERE
+			1=1
+		<#if custCode?exists && custCode!="">
+        	AND ca.cust_code = :custCode
+        </#if> 
+		<#if custAccountId?exists && custAccountId!="">
+        	AND ca.cust_account_id = :custAccountId
+        </#if> 
+        <#if lenderCustCode?exists && lenderCustCode!="">
+        	AND ca.lender_cust_code = :lenderCustCode
+        </#if> 
+		]]>
+	</sql>
+
+	<sql id="queryByApply">
+	<![CDATA[
+		SELECT
+			ca_.*
+		FROM
+			t_cust_account ca_
+		LEFT JOIN 
+			t_lender_apply la_ 
+		ON ca_.cust_account_id = la_.cust_account_id
+		WHERE 
+			la_.lender_apply_id = :id
+		]]>
+	</sql>
+</sqlMap>	

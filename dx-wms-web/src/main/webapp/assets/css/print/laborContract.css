@@ -1,0 +1,142 @@
+.font-size5{
+	font-size:10.5pt;
+	font-family:宋体;
+}
+.title1{
+	font-size:28pt;
+}
+.front-page div>p{
+	margin-bottom:18.75pt;
+	margin-top:0;
+}
+.font-size4{
+	font-size:14pt;
+	border:none;
+	border-bottom:black solid 0px;
+}
+.print-body {
+	width:21cm;
+	height:29.7cm;
+	border:1px solid black;
+	position:relative;
+}
+.front-text{
+	margin:2.54cm 1.92cm 2cm 2.4cm;
+}
+.main-text{
+	margin:2.54cm 0 0 2.4cm;
+}
+.front-page br{
+	line-height:34.5pt;
+}
+.main-page br{
+	line-height:24pt;
+}
+.main-page p{
+	margin-bottom:0;
+	margin-top:0;
+	line-height:23.25pt;
+}
+.title2{
+	font-size:12pt;
+	margin-top:7.5pt;
+	font-weight:bold;
+	text-align:center;
+}
+.info{
+	border:none;
+	border-bottom:black;
+}
+.header-left{
+	font-size:16pt;
+	font-family:微软雅黑;
+	margin-left:87px;
+	font-weight:bold;
+}
+.header-right{
+	font-size:8pt;
+	font-family:微软雅黑;
+	font-weight:bold;
+	margin-left:413px;
+}
+.sa-main-page br{
+	line-height:23px;
+}
+.sa-main-page p{
+	margin-bottom:0;
+	margin-top:0;
+	line-height:31px;
+}
+.sa-main-text{
+	margin:5px 1cm 0px 2cm;
+	font-size:9pt;
+	font-family:微软雅黑;
+}
+.sa-title1{
+	font-size:14pt;
+	font-family:微软雅黑;
+	font-weight:bold;
+	text-align:center;
+}
+.sa-title2{
+	font-size:9pt;
+	font-family:微软雅黑;
+	font-weight:bold;
+}
+.sa-main-text-front{
+	margin:0px 29px;
+}
+.sa-text p{
+	margin-left:29px;
+	line-height:19px;
+}
+.sa-text p:last-child{
+	margin-bottom:11px;
+}
+.sa-text3{
+	margin-left:39px;
+}
+.cc-header-left{
+	font-size:16pt;
+	font-family:微软雅黑;
+	margin-left:106px;
+}
+.cc-header-right{
+	font-size:10pt;
+	font-family:宋体;
+	font-weight:bold;
+	margin-left:440px;
+}
+.cc-title{
+	font-size:16pt;
+	font-family:微软雅黑;
+	font-weight:bold;
+	text-align:center;
+	line-height:43px;
+}
+.cc-main-text{
+	font-size:10.5pt;
+	font-family:微软雅黑;
+	margin:53px 1cm 0px 2.8cm;
+}
+.cc-main-text br{
+	line-height:25px;
+}
+.cc-main-text3 p{
+	line-height:25px;
+	margin-top:0;
+	margin-bottom:0;
+}
+.cc-main-text3 br{
+	line-height:32px;
+	margin-top:0;
+	margin-bottom:0;
+}
+.cc-main-text3 br:first-child{
+	line-height:18px;
+}
+#printDiv{
+	position:fixed;
+	left:830px;
+	top:50px;
+}

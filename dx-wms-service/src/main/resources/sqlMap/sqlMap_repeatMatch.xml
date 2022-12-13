@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="repeatMatch">
+
+	<sql id="queryInvest">
+		<![CDATA[
+		SELECT
+			ip_.investment_pool_id poolId,
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			mbb_.biz_code lenderCode,
+			ip_.init_total_amount initAmount,
+			ip_.current_undo_amount undoAmount,
+			ip_.current_done_amount matchAmount,
+			ip_.product_id productId,
+			ip_.init_match_time date,
+			ip_.match_user_id userId,
+			mr_.count count,
+			ip_.bill_day portDay,
+			ip_.init_bill_date portDate
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		LEFT JOIN (
+			SELECT
+				investment_pool_id investment_pool_id,
+				COUNT(match_result_id) count
+			FROM
+				t_match_result
+			WHERE
+				data_status = 'N'
+			AND current_period = 1
+			GROUP BY
+				investment_pool_id
+		) mr_ ON mr_.investment_pool_id = ip_.investment_pool_id
+		WHERE
+			ip_.data_status = 'N'
+		<#if filterAmountFrom?exists && filterAmountFrom!="">	
+			AND ip_.current_undo_amount >= :filterAmountFrom
+		</#if>
+		<#if filterAmountTo?exists && filterAmountTo!="">	
+			AND ip_.current_undo_amount <= :filterAmountTo
+		</#if>
+		<#if productId?exists && productId!="-1">	
+			AND ip_.product_id = :productId
+		</#if>
+		<#if poolId?exists && poolId!="">	
+			AND ip_.investment_pool_id = :poolId
+		</#if>
+		<#if poolIds?exists && (poolIds?size>0) >
+			AND ip_.investment_pool_id NOT IN (:poolIds)
+		</#if>
+		<#if lenderCode?exists && lenderCode!="">
+			AND mbb_.biz_code = :lenderCode
+		</#if>
+		ORDER BY
+			ip_.current_undo_amount DESC
+		]]>
+	</sql>
+</sqlMap>	

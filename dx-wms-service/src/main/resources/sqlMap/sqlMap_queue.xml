@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="queue">
+	<sql id="queryParamPage">
+		<![CDATA[
+			SELECT
+				match_biz_base_id matchBizBaseId
+				,cust_name matchCustName
+				,biz_product_id productId
+				,biz_total_amount initTotalAmount
+				,id_card matchCustIdCard
+				,biz_date_begin bizDateBegin
+				,biz_date_end bizDateEnd
+				,create_time enterDate
+				<#if type?exists && type="1">
+					,biz_contract_code contractCode
+					,biz_bill_day matchDay
+					,sign_date signDate
+					,biz_period initPeriod
+					,biz_period remainPeriod
+					,biz_attr attr
+					,biz_amount initEaBillAmount
+					,biz_date_begin initBillDate
+				</#if>
+				<#if type?exists && type="2">
+					,biz_cust_code lenderCustCode
+					,biz_code lenderCode
+					,apply_date applyDate
+					,cust_code matchCustCode
+				</#if>
+			FROM
+				t_match_biz_base
+			WHERE
+				1=1
+			AND data_status = 'A'	
+			<#if type?exists && type!="">
+				AND biz_category = :type
+			</#if>
+			<#if custName?exists && custName!="">	
+				AND cust_name = :custName
+			</#if>
+			<#if repaymentDay?exists && repaymentDay!="">
+				AND biz_bill_day = :repaymentDay
+			</#if>
+			<#if lenderWay?exists && lenderWay!="">
+				AND biz_product_id = :lenderWay
+			</#if>
+			<#if applyDateBegin?exists>	
+				AND apply_date >= :applyDateBegin
+			</#if>
+			<#if applyDateEnd?exists>	
+				AND apply_date <= :applyDateEnd
+			</#if>
+			<#if enterDateBegin?exists>
+				AND create_time >= :enterDateBegin
+			</#if>
+			<#if enterDateEnd?exists>	
+				AND create_time <= :enterDateEnd
+			</#if>
+			<#if signDateBegin?exists>
+				AND sign_date >= :signDateBegin
+			</#if>
+			<#if siginDateEnd?exists>	
+				AND sign_date <= :siginDateEnd
+			</#if>
+			ORDER BY create_time DESC
+		]]>
+	</sql>
+</sqlMap>	    	

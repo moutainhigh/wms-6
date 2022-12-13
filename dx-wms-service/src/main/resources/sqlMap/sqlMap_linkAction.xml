@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="linkAction">
+
+	<!-- 查询所有 -->
+	<sql id="queryAll">
+	<![CDATA[
+		SELECT
+			link_action_id,
+			link_id,
+			action_id,
+			description,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_link_action
+        ]]>
+	</sql>
+	<!-- 根据页面查询 -->
+	<sql id="queryById">
+	<![CDATA[
+		SELECT
+			link_action_id,
+			link_id,
+			action_id,
+			description,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_link_action
+		WHERE link_action_id = :id
+        ]]>
+	</sql>
+	
+</sqlMap>	
+      	

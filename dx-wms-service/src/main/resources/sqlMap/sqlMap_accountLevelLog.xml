@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="accountLevelLog">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			*
+		FROM 
+			t_account_level_log
+		WHERE 
+			account_level_log_id = :id
+    	]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		*
+		FROM 
+			t_account_level_log
+		]]>
+	</sql>
+	
+	<sql id="queryByParam">
+		<![CDATA[
+		SELECT
+			*
+		FROM 
+			t_account_level_log
+		WHERE
+			1=1 
+		<#if custCode?exists && custCode!="">
+		AND	cust_code = :custCode
+		</#if> 
+		<#if isCurrent?exists && isCurrent!="">	
+		AND is_current = :isCurrent	
+		</#if> 
+    	]]>
+	</sql>
+	<sql id="batchUpdate">
+		<![CDATA[
+		UPDATE 
+			t_account_level_log
+		SET
+			is_current = 0	
+		WHERE
+			is_current = 1 
+    	]]>
+	</sql>
+</sqlMap>	  		

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchUser">
+
+	<sql id="queryByIdCard">
+		<![CDATA[
+		SELECT
+        	match_user_id,
+			match_cust_name,
+			match_cust_code,
+			match_cust_id_card,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+    	FROM
+			t_match_user
+		WHERE
+			data_status = 'A'
+		AND 
+			match_cust_id_card = :idCard
+		
+    	]]>
+	</sql>
+	<sql id="queryById">
+        <![CDATA[
+            SELECT
+                *
+            FROM
+                t_match_user
+            WHERE
+                data_status = 'A'
+			AND 
+				match_user_id = :id
+        ]]>
+    </sql>	
+</sqlMap>	

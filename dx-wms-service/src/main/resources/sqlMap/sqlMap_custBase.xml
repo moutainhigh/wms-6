@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="custBase">
+
+	<!-- 根据主键ID查询 -->
+	<sql id="queryById">
+        <![CDATA[
+            SELECT
+                cust_id,
+                cust_code,
+                cust_name,
+                id_type,
+                id_card,
+                mobile,
+                sex,
+                cust_source,
+                cust_source_other,
+                create_user,
+                create_time,
+                update_user,
+                update_time,
+                data_status,
+                DATE_FORMAT(create_time, '%Y-%m-%d') registerTime
+            FROM
+                t_cust_base
+            WHERE
+                cust_id = :id
+         	  
+        ]]>
+	</sql>
+
+	<sql id="queryForPage">
+	    <![CDATA[
+	        SELECT
+	            cust_id custId,
+	            cust_code custCode,
+	            cust_name custName,
+	            id_type idType,
+	            id_card idCard,
+	            mobile mobile,
+	            sex sex,
+	            cust_source custSource,
+	            cust_source_other custSourceOther,
+	           	create_time registerTime,
+	            data_status dataStatus
+	        FROM
+	            t_cust_base
+	        WHERE 
+				data_status != 'D'
+            <#if custName?exists && custName!="">
+            	AND cust_name LIKE CONCAT ('%',:custName,'%')
+            </#if> 
+            <#if idCard?exists && idCard!="">
+            	AND id_card = :idCard
+            </#if> 
+            <#if mobile?exists && mobile!="">
+            	AND mobile = :mobile
+            </#if>
+            <#if managerId?exists && managerId!="">
+            	AND create_user = :managerId
+            </#if>
+            <#if registerTimeBegin?exists && registerTimeBegin!="">
+            	AND create_time >= :registerTimeBegin
+            </#if>
+            <#if registerTimeEnd?exists && registerTimeEnd!="">
+            	AND create_time <= :registerTimeEnd
+            </#if>
+            ORDER BY  update_time DESC 
+	    ]]>
+	</sql>
+
+	<!-- 根据custCode查询 -->
+	<sql id="queryByCustCode">
+	    <![CDATA[
+	        SELECT
+	            cust_id,
+	            cust_code,
+	            cust_name,
+	            id_type,
+	            id_card,
+	            mobile,
+	            sex,
+	            cust_source,
+	            cust_source_other,
+	            create_user,
+	            create_time,
+	            update_user,
+	            update_time,
+	            data_status
+	        FROM
+	            t_cust_base
+	        WHERE 
+	            cust_code = :custCode
+       ]]>
+	</sql>
+
+	<!-- 根据客户信息查询 -->
+	<sql id="checkCustInfo">
+        <![CDATA[
+            SELECT
+                cust_id,
+                cust_code,
+                cust_name,
+                id_type,
+                id_card,
+                mobile,
+                sex,
+                cust_source,
+                cust_source_other,
+                create_user,
+                create_time,
+                update_user,
+                update_time,
+                data_status
+            FROM
+                t_cust_base
+            WHERE 
+            	data_status != 'D'
+             <#if idCard?exists && idCard!="">
+            	AND id_card = :idCard
+            <#else>
+            	AND mobile = :mobile
+            </#if> 
+            <#if custId?exists && custId!="">
+            	AND cust_id != :custId
+            </#if> 
+        ]]>
+	</sql>
+	
+	<sql id="queryTransLog">
+	    <![CDATA[
+	        SELECT
+				t.pk_code lenderCustCode,
+				a.cust_name custName,
+				t.from_org_id fromOrgId,
+				t.from_team_id fromTeamId,
+				t.from_user fromUser,
+				t.to_org_id toOrgId,
+				t.to_team_id toTeamId,
+				t.to_user toUser,
+				t.create_time createTime
+			FROM t_cust_transfer_log t
+			LEFT JOIN t_cust_account a ON t.pk_code=a.lender_cust_code
+			WHERE 
+				1=1
+				<#if lenderCustCode?exists && lenderCustCode != "">
+		     		AND t.pk_code = :lenderCustCode
+		     	</#if> 
+			ORDER BY t.create_time DESC
+	    ]]>
+	</sql>
+
+	<sql id="queryForCustTransfer">
+	    <![CDATA[
+	        SELECT
+				cb.cust_id,
+				ca.cust_account_id,
+				cb.cust_code,
+				ca.lender_cust_code,
+				cb.cust_name,
+				cb.id_card,
+				cb.mobile,
+				ca.team_id,
+				ca.org_id,
+				cb.create_user 'cust_manager_id',
+				ca.data_status
+			FROM
+				t_cust_base cb
+			LEFT JOIN t_cust_account ca ON ca.cust_code = cb.cust_code
+	        WHERE 
+	        	(cb.data_status != 'D' OR cb.data_status IS NULL)
+	        AND 
+	        	(ca.data_status != 'D' OR ca.data_status IS NULL)
+	        <#if custIds?exists>
+	     	AND cb.cust_id IN (:custIds)
+	     	</#if>	
+	     	<#if custCode?exists && custCode != "">
+	     	AND cb.cust_code = :custCode
+	     	</#if> 
+	     	<#if lenderCustCode?exists && lenderCustCode != "">
+	     	AND ca.lender_cust_code = :lenderCustCode
+	     	</#if> 
+	     	<#if custName?exists && custName != "">
+                AND cb.cust_name = :custName
+            </#if> 
+            <#if idCard?exists && idCard != "">
+                AND cb.id_card = :idCard
+            </#if> 
+            <#if mobile?exists && mobile != "">
+                AND cb.mobile = :mobile
+            </#if>
+           
+            <#if custManagerId?exists && custManagerId != "">
+                AND cb.create_user = :custManagerId
+            </#if> 
+            ORDER BY cb.create_user ,ca.lender_cust_code ASC
+	    ]]>
+	</sql>
+
+	<!-- 潜客用户转移 -->
+	<sql id="updateCreateUser">
+	    <![CDATA[
+	       UPDATE t_cust_base 
+	       SET create_user = :createUser,
+		   update_time = update_time
+	       WHERE cust_id =  :custId
+	       AND (data_status IS NOT NULL AND data_status != 'D')
+    	]]>
+	</sql>
+</sqlMap>

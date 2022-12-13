@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="blockMatch">
+
+	<sql id="queryInterest">
+		<![CDATA[
+		SELECT
+			mbb_i_.cust_name custName,
+			mbb_i_.biz_code lenderCode,
+			mbb_c_.cust_name applyCustName,
+			mbb_c_.id_card AS idCard,
+			mbb_c_.biz_contract_code bizContractCode,
+			mr_.transfer_total_amount transferTotalAmount,
+			mr_.transfer_ea_amount transferEaAmount,
+			mr_.creditor_rate creditorRate,
+			mr_.transfer_ea_capital_amount transferEaCapitalAmount,
+			mr_.transfer_ea_interest_amount transferEaInterestAmount,
+			ROUND(
+				mr_.transfer_total_amount * cp_.rate_month,
+				2
+			) - mr_.transfer_ea_interest_amount interestMargin,
+			cp_.current_total_amount currentTotalAmount,
+			cp_.init_total_amount initTotalAmount,
+			cp_.init_ea_bill_amount initEaBillAmount,
+			cp_.init_period initPeriod,
+			cp_.remain_period remainPeriod
+		FROM
+			t_match_result mr_
+		LEFT JOIN t_creditor_pool cp_ ON mr_.creditor_pool_id = cp_.creditor_pool_id
+		LEFT JOIN t_match_biz_base mbb_c_ ON mbb_c_.match_biz_base_id = cp_.match_biz_base_id
+		LEFT JOIN t_investment_pool ip_ ON ip_.investment_pool_id = mr_.investment_pool_id
+		LEFT JOIN t_match_biz_base mbb_i_ ON mbb_i_.match_biz_base_id = ip_.match_biz_base_id
+		WHERE
+			mr_.data_status = 'A'
+		AND (
+			ROUND(
+				mr_.transfer_total_amount * cp_.rate_month,
+				2
+			) - mr_.transfer_ea_interest_amount < - 0.03
+			OR ROUND(
+				mr_.transfer_total_amount * cp_.rate_month,
+				2
+			) - mr_.transfer_ea_interest_amount > 0.03
+		)
+		ORDER BY
+			mr_.creditor_pool_id ASC
+			
+    	]]>
+	</sql>
+</sqlMap>	

@@ -1,0 +1,64 @@
+.body{
+    width:685px !important;
+    padding: 30px 40px 50px 40px !important;
+}
+.txt_bg {
+    font-size: 10pt;
+    line-height: 35px;
+    height: 30px;
+}
+
+.txt {
+    font-size: 10pt;
+    line-height: 25px;
+    height: 25px;
+}
+
+.txt9 {
+    font-size: 9pt;
+    line-height: 15px;
+    height: 12px;
+}
+
+.txt_bold {
+    font-weight: bold;
+}
+
+.txt_indent{
+    text-indent: 2em;
+}
+
+.table_txt{
+    font-size: 8pt;
+}
+.table_txt9{
+    font-size: 9pt;
+}
+.report_table{
+    border-collapse:collapse;
+    border-spacing:0;
+    border-left:1px solid #888;
+    border-top:1px solid #888;
+    width: 680px;
+}
+.report_td{
+    border-right:1px solid #888;
+    border-bottom:1px solid #888;
+    padding:5px 5px;
+}
+.report_th{
+    font-weight:bold;
+}
+.table_height{
+    height: 40px;
+}
+.txt_hb{
+    text-align:right;
+    height: 10px;
+    margin-top: -4%;
+}
+.table_zw{
+    font-size: 9pt;
+    height: 15px;
+    line-height: 15px;
+}

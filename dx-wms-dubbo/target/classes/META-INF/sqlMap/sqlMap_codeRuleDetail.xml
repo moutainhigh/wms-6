@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="codeRuleDetail">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+    	    SELECT 
+    	    	code_rule_detail_id,
+				code_rule_detail_name,
+				code_rule_detail_format,
+				code_rule_detail_type,
+				code_rule_detail_size,
+				code_rule_detail_val,
+				code_rule_detail_desc,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status
+
+    	    FROM t_code_rule_detail
+			WHERE 
+				code_rulet_detail_id = :id
+    	]]>
+	</sql>
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    		SELECT 
+    			code_rule_detail_id,
+				code_rule_detail_name,
+				code_rule_detail_format,
+				code_rule_detail_type,
+				code_rule_detail_size,
+				code_rule_detail_val,
+				code_rule_detail_desc,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status
+    		FROM t_code_rulet_detail
+    	]]>
+	</sql>    
+	    	
+    		
+<!--根据编号规则标示和编号规则版本查找  -->
+	<sql id="queryByRuleKeyAndVersionVal">
+		<![CDATA[
+			SELECT 
+			  crd.code_rule_detail_id codeRuleDetailId,
+				crd.code_rule_detail_name codeRuleDetailName,
+				crd.code_rule_detail_format codeRuleDetailFormat,
+				crd.code_rule_detail_type codeRuleDetailType,
+				crd.code_rule_detail_size codeRuleDetailSize,
+				crd.code_rule_detail_val codeRuleDetailVal,
+				crd.code_rule_detail_desc codeRuleDetailDesc,
+				cvd.code_version_detail_index codeVersionDetailIndex
+			  from t_code_rule_detail crd 
+			LEFT JOIN t_code_version_detail cvd on crd.code_rule_detail_id = cvd.code_rule_detail_id
+			LEFT JOIN t_code_version cv on cvd.code_version_id = cv.code_version_id
+			LEFT JOIN t_code_rule cr on cv.code_rule_id = cr.code_rule_id
+			 WHERE 
+				cr.code_rule_key = :ruleKey and cv.code_version_val = :versionVal
+				and crd.data_status = 'A'
+				and cvd.data_status = 'A'
+				and cv.data_status = 'A'
+				and cr.data_status = 'A'
+		]]>
+	</sql>    
+</sqlMap>	     		
+	

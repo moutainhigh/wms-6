@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custTransferLog">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+	<![CDATA[
+		SELECT
+				cust_transfer_log_id,
+				table_name,
+				pk_id,
+				pk_code,
+				from_org_id,
+				from_team_id,
+				from_user,
+				to_org_id,
+				to_team_id,
+				to_user,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status
+			FROM
+			t_cust_transfer_log 
+			where	
+			  cust_transfer_log_id = :id
+			 ]]>
+	</sql>
+</sqlMap>	
+				

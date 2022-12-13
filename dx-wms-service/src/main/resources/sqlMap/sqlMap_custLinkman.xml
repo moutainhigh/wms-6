@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custLinkman">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			cust_linkman_id,
+			cust_account_id,
+			linkman_name,
+			linkman_name_spell,
+			linkman_sex,
+			linkman_relation,
+			linkman_id_type,
+			linkman_id_card,
+			linkman_mobile,
+			area_code,
+			tel_num,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_linkman
+			WHERE 
+				cust_linkman_id = :id
+		]]>
+	</sql>    
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 	
+    		cust_linkman_id,
+			cust_account_id,
+			linkman_name,
+			linkman_name_spell,
+			linkman_sex,
+			linkman_relation,
+			linkman_id_type,
+			linkman_id_card,
+			linkman_mobile,
+			area_code,
+			tel_num,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_linkman
+    ]]>
+</sql>
+
+	<!-- 根据客户编号查询 -->
+	<sql id="queryByAccountId">
+        <![CDATA[
+        SELECT
+		    cust_linkman_id,
+		    cust_account_id,
+		    linkman_name,
+		    linkman_name_spell,
+		    linkman_sex,
+		    linkman_relation,
+		    linkman_id_type,
+		    linkman_id_card,
+		    linkman_mobile,
+		    area_code,
+		    tel_num,
+		    create_user,
+		    create_time,
+		    update_user,
+		    update_time,
+		    data_status
+		FROM
+		    t_cust_linkman
+		WHERE
+		    cust_account_id = :accountId
+        ]]>
+    </sql> 
+</sqlMap>		
+		
+

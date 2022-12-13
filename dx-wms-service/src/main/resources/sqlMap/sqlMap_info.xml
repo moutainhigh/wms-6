@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="info">
+	<!-- 根据页面查询 -->
+	<sql id="queryForPage">
+		<![CDATA[
+			SELECT
+				la.cust_account_id custAccountId,
+				ca.cust_name custName,
+				ca.id_card idCard,
+				ca.mobile mobile,
+				la.lender_apply_id lenderApplyId,
+				la.lender_code lenderCode,
+				la.product_id productId,
+				la.sign_date signDate,
+				la.team_id teamId,
+				la.org_id orgId,
+				la.lender_amount lenderAmount,
+				ca.create_user managerId,						
+				la.lender_cust_code lenderCustCode,			
+				la.settlement_date settleDate,
+				la.statement_date statementDate,
+				la.due_date dueDate,
+				la.form_status formStatus,
+				la.parent_id parrentId
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca 
+			ON la.cust_account_id = ca.cust_account_id
+			WHERE
+				la.data_status = 'A'
+			AND la.form_status IS NOT NULL 
+			<#if userId?exists && userId!="">
+				AND la.create_user = :userId 
+			</#if> 
+			<#if orgId?exists && orgId!="">
+				AND la.org_id = :orgId 
+			</#if> 
+			<#if idCard?exists && idCard!="">
+				AND ca.id_card = :idCard 
+			</#if> 
+			<#if custName?exists && custName!="">
+				AND cust_name LIKE CONCAT('%' ,:custName, '%') 
+			</#if> 
+			<#if lenderCode ?exists && lenderCode!="">
+				AND la.lender_code = :lenderCode 
+			</#if> 
+			<#if mobile?exists && mobile!="">
+				AND ca.mobile = :mobile 
+			</#if> 
+			<#if custManager ?exists && custManager!="">
+				AND ca.create_user = :custManager 
+			</#if> 
+			<#if productId ?exists && productId!="">
+				AND la.product_id = :productId 
+			</#if> 
+			<#if signDateBegin?exists && signDateBegin!="">
+				AND la.sign_date >= :signDateBegin 
+			</#if>
+			<#if signDateEnd?exists && signDateEnd!="">
+				AND la.sign_date <= :signDateEnd 
+			</#if>
+			<#if currentStep?exists && currentStep!="">
+				AND la.form_status = :currentStep 
+			</#if> 
+			<#if lenderAmountArea ?exists && lenderAmountArea=="1">
+				AND la.lender_amount >= 50000	
+				AND la.lender_amount <= 100000 
+			</#if> 
+			<#if lenderAmountArea ?exists && lenderAmountArea=="2">
+				AND la.lender_amount > 100000
+				AND la.lender_amount <= 200000 
+			</#if>
+			<#if lenderAmountArea ?exists && lenderAmountArea=="3">
+				AND la.lender_amount > 200000
+				AND la.lender_amount <= 500000 
+			</#if>
+			<#if lenderAmountArea ?exists && lenderAmountArea=="4">
+				AND la.lender_amount > 500000
+				AND la.lender_amount <= 1000000 
+			</#if>
+			<#if lenderAmountArea ?exists && lenderAmountArea=="5">
+				AND la.lender_amount > 1000000 
+			</#if>
+			<#if settlementDateBegin ?exists && settlementDateBegin!="">
+				AND la.settlement_date >= :settlementDateBegin 
+			</#if>
+			<#if settlementDateEnd ?exists && settlementDateEnd!="">
+				AND la.settlement_date <= :settlementDateEnd 
+			</#if>
+				ORDER BY la.sign_date DESC,la.update_time DESC
+    	]]>
+	</sql>
+</sqlMap>	
+             

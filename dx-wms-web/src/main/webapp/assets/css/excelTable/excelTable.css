@@ -1,0 +1,12 @@
+@charset "UTF-8";
+/* CSS Document */
+/* <#--开始类似Excel的table的样式--> */
+.tableFirst{ overflow:hidden;}
+.tableBox{ height:200px; width:100%; position:relative; overflow-x:auto; overflow-y:hidden;table-layout:fixed; }
+.tablehead{ position:absolute; width:108.3%; left:0;}
+.tablebody{ position:absolute; width:224%; height:150px; overflow-y:auto; overflow-x:hidden; top:40px; left:0;}
+.tableClass th{ width:200px;white-space:normal;text-align:center;font-weight: normal;}
+.tableClass{border-collapse: collapse; border-spacing: 0;margin-left: 5px;margin-right: 5px;table-layout:fixed;} 
+/* <#--结束类似Excel的table的样式--> */
+
+

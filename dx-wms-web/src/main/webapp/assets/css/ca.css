@@ -1,0 +1,37 @@
+#networkInfoFrom .portlet .portlet-body{
+	padding: 10px;
+}
+.video-list .accordion-heading{
+	 background-color: #4b8df8;
+}
+.video-list .accordion-heading .group-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+}
+.video-list td a.onview{
+	 color: black;
+    font-weight: 900;
+}
+.video-list td a.viewed{
+	color:grey;
+}
+.enlarge,.narrow,.cancelCompare{
+	 background-size: 50px auto;
+    cursor: pointer;
+    display:inline-block;
+    height: 50px;
+    width: 50px;
+}
+.enlarge:hover,.narrow:hover,.cancelCompare:hover{
+	
+}
+.enlarge{
+	background-image: url("../image/plus_zoom.png");
+}
+.narrow{
+	background-image: url("../image/minus_zoom.png");
+}
+.cancelCompare{
+	background-image: url("../image/close_circle.png");
+}

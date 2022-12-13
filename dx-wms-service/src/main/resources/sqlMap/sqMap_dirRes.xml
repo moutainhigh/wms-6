@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="dirRes">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			dir_res_id,
+			res_id,
+			dir_id,
+			dir_res_index,
+			is_edit,
+			dir_res_key,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_dir_res
+			WHERE 
+				file_dir_relation_id = :id
+    	]]>
+	</sql>	
+
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+			dir_res_id,
+			res_id,
+			dir_id,
+			dir_res_index,
+			is_edit,
+			dir_res_key,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_dir_res
+		]]>
+	</sql>    
+</sqlMap>	
+
+
+
+
+
+

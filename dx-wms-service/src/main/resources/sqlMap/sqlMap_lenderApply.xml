@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderApply">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			lender_apply_id = :id
+		]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery		
+    	FROM t_lender_apply
+    ]]>
+	</sql>
+
+	<!-- 通过理财客户Id查询出借申请单列表 -->
+	<sql id="queryByCustAccountId">
+		<![CDATA[
+			SELECT	
+				lender_apply_id,
+				lender_code,
+				contract_code,
+				cust_account_id,
+				lender_cust_code,
+				product_id,
+				expect_lender_date_begin,
+				expect_lender_date_end,
+				pay_way_id,
+				lender_amount,
+				cust_finance_id,
+				sign_date,
+				team_id,
+				org_id,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status,
+				settlement_date,
+				sign_mobile,
+				statement_date,
+				match_date,
+				form_status,
+				parent_id,
+				due_date,
+				due_status,
+				proc_ins_id,
+				recovery
+			FROM t_lender_apply
+				WHERE 
+				cust_account_id = :custAccountId
+				AND lender_code IS NOT NULL  
+				AND form_status IS NOT NULL
+		]]>
+	</sql>
+
+	<!-- 通过理财客户Id查询出借申请单列表 -->
+	<sql id="queryByCustAccount">
+		<![CDATA[
+			SELECT	
+				lender_apply_id,
+				lender_code,
+				contract_code,
+				cust_account_id,
+				lender_cust_code,
+				product_id,
+				expect_lender_date_begin,
+				expect_lender_date_end,
+				pay_way_id,
+				lender_amount,
+				cust_finance_id,
+				sign_date,
+				team_id,
+				org_id,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status,
+				settlement_date,
+				sign_mobile,
+				statement_date,
+				match_date,
+				form_status,
+				parent_id,
+				due_date,
+				due_status,
+				proc_ins_id,
+				recovery
+			FROM t_lender_apply
+				WHERE 
+				cust_account_id = :custAccountId
+		]]>
+	</sql>
+	<!-- 通过理财客户编号查询出借申请单列表 -->
+	<sql id="queryByLenderCustCode">
+		<![CDATA[
+			SELECT
+				la.lender_apply_id,
+				la.lender_code,
+				la.contract_code,
+				la.cust_account_id,
+				la.lender_cust_code,
+				la.product_id,
+				la.expect_lender_date_begin,
+				la.expect_lender_date_end,
+				la.pay_way_id,
+				la.lender_amount,
+				la.cust_finance_id,
+				la.sign_date,
+				la.team_id,
+				la.org_id,
+				la.create_user,
+				la.create_time,
+				la.update_user,
+				la.update_time,
+				la.data_status,
+				la.settlement_date,
+				la.sign_mobile,
+				la.statement_date,
+				la.match_date,
+				ca.cust_account_id,
+				ca.lender_cust_code,
+				la.form_status,
+				la.parent_id,
+				la.due_status,
+				la.due_date,
+				la.proc_ins_id	
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+			WHERE
+				ca.lender_cust_code = :lenderCustCode
+			AND la.lender_code IS NOT NULL
+	]]>
+	</sql>
+
+	<sql id="updateCustFinanceIdById">
+        <![CDATA[
+            UPDATE t_lender_apply
+            SET cust_finance_id = :custFinanceId
+            WHERE
+                lender_apply_id = :lenderApplyId
+             ]]>
+	</sql>
+
+	<sql id="updateLenderIncomeById">
+        <![CDATA[
+            UPDATE t_lender_income
+            SET data_status = :dataStatus
+            WHERE
+                lender_apply_id = :lenderApplyId
+             ]]>
+	</sql>
+
+	<sql id="setLenderCodeById">
+        <![CDATA[
+            UPDATE t_lender_apply
+			SET lender_code = :lenderCode
+			WHERE
+			    lender_apply_id = :lenderApplyId
+             ]]>
+	</sql>
+
+	<sql id="setLenderStatementDate">
+        <![CDATA[
+            UPDATE t_lender_apply
+			SET statement_date = :statementDate,
+			match_date = :matchDate
+			WHERE
+			    lender_apply_id = :lenderApplyId
+             ]]>
+	</sql>
+
+	<!-- 根据出借信息查询 -->
+	<sql id="checkLenderInfo">
+    <![CDATA[
+	SELECT
+		lender_apply_id,
+		lender_code,
+		contract_code,
+		cust_account_id,
+		lender_cust_code,
+		product_id,
+		expect_lender_date_begin,
+		expect_lender_date_end,
+		pay_way_id,
+		lender_amount,
+		cust_finance_id,
+		sign_date,
+		team_id,
+		org_id,
+		create_user,
+		create_time,
+		update_user,
+		update_time,
+		data_status,
+		settlement_date,
+		sign_mobile,
+		statement_date,
+		match_date,
+		form_status,
+		parent_id,
+		due_date,
+		due_status,
+		proc_ins_id,
+		recovery	
+	FROM 
+		t_lender_apply
+    WHERE 
+    	data_status  ='A'
+    <#if contractCode?exists && contractCode!="">
+    	AND contract_code = :contractCode
+    </#if> 
+    <#if lenderApplyId?exists && lenderApplyId!="">
+    	AND lender_apply_id != :lenderApplyId
+    </#if> 
+     ]]>
+	</sql>
+
+	<!-- 根据主键查询调用信息 -->
+	<sql id="getPushRecordById">
+		<![CDATA[
+		SELECT
+			la.lender_apply_id,
+			la.lender_code,
+			la.sign_mobile,
+			la.pay_way_id ,
+			la.parent_id,
+			ca.cust_account_id,
+			ca.cust_name,
+			ca.id_type certType,
+			ca.id_card certNo,
+			ca.mobile mobileNo,
+			la.lender_amount tradeAmount,
+			cf.bank_category,
+			cf.sub_bank,
+			cf.account_num bankAccount,
+			cf.province_region_code,
+			cf.city_region_code
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id
+		WHERE
+			la.lender_apply_id = :lenderApplyId
+		AND cf.account_category = 1
+		]]>
+	</sql>
+
+	<!-- 理财申请转移 -->
+	<sql id="updateCreateUserAndOrg">
+	    <![CDATA[
+	       UPDATE t_lender_apply
+		   SET create_user = :createUser,
+		   org_id = :orgId,
+		   team_id = :teamId,
+	   	   update_user = :updateUser
+		   WHERE
+			   	data_status = 'A'
+		   AND lender_apply_id = :lenderApplyId
+    	]]>
+	</sql>
+
+	<sql id="updateCreateUser">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+		   		SET create_user = :createUser,
+		   		update_user = :updateUser
+		   	WHERE 1=1
+		   		AND lender_apply_id = :lenderApplyId
+    	]]>
+	</sql>
+
+	<sql id="queryLendersInfo">
+	    <![CDATA[
+	       SELECT
+				la.lender_apply_id,
+				la.lender_code,
+				ca.cust_name,
+				ca.id_card,
+				la.product_id,
+				ll.current_step_key,
+				ll.current_action
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca ON ca.cust_account_id = la.cust_account_id
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				ll.is_current = '1'
+			AND ll.data_status = 'A'
+			AND (
+				ca.data_status != 'D' && ca.data_status IS NOT NULL
+			)
+			AND la.data_status = 'A'
+			<#if lenderCode?exists && lenderCode != "">
+		    AND la.lender_code = :lenderCode
+		    </#if>
+		    <#if custName?exists && custName != "">
+		    AND ca.cust_name = :custName
+		    </#if>
+		    <#if idCard?exists && idCard != "">
+		    AND ca.id_card = :idCard
+		    </#if>
+		    <#if productId?exists && productId != "">
+		    AND la.product_id = :productId
+		    </#if>
+		    <#if currentStepKey?exists && currentStepKey != "">
+		    AND ll.current_step_key = :currentStepKey
+		    </#if>
+    	]]>
+	</sql>
+
+	<sql id="queryByCustom">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery		
+		FROM t_lender_apply
+		WHERE 
+			1=1
+		<#if lenderCodes?exists>	
+		AND	lender_code IN (:lenderCodes)
+		</#if>
+		]]>
+	</sql>
+	<sql id="updateLenderApplyFormStatus">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET form_status = :formStatus
+			WHERE
+				lender_apply_id =:lenderApplyId
+    	]]>
+	</sql>
+	<sql id="updateLenderApplyProcInsId">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET proc_ins_id = :procInsId
+			WHERE
+				lender_apply_id =:lenderApplyId
+    	]]>
+	</sql>
+
+	<sql id="getLenderApplyByProcInsId">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery	
+		FROM t_lender_apply
+		WHERE 
+			proc_ins_id = :procInsId
+		]]>
+	</sql>
+
+	<sql id="getLenderApplyByParentId">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			parent_id = :parentId
+			AND (form_status != '20' OR form_status IS NULL) 
+			AND data_status = 'A'
+		]]>
+	</sql>
+
+	<sql id="getLenderApplyByFormStatus">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			due_date,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery
+		FROM t_lender_apply la
+		WHERE 
+			 form_status IN (:formStatus)
+			AND data_status = 'A'
+			<#if orgId?exists && orgId !=''>
+				AND la.org_id = :orgId
+			</#if>
+			<#if createUser?exists && createUser !=''>
+				AND la.create_user = :createUser
+			</#if>
+		]]>
+	</sql>
+
+	<sql id="getAllParentIdLenderApply">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_status,
+			due_date,
+			proc_ins_id,
+			recovery
+		FROM 
+			t_lender_apply
+		WHERE 
+			parent_id IS NOT NULL
+		AND 
+			data_status = 'A'
+		]]>
+	</sql>
+
+
+	<sql id="updateLenderApplyDataStatus">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET data_status = :dataStatus
+			WHERE
+				lender_apply_id =:lenderApplyId
+    	]]>
+	</sql>
+
+	<sql id="getLenderByIdAndParentId">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			proc_ins_id,
+			due_status,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			parent_id = :parentId
+			<#if lenderApplyId?exists && lenderApplyId !=''>
+				AND lender_apply_id NOT IN (:lenderApplyId)
+			</#if>
+			AND form_status != 20
+			AND data_status = 'A'
+		]]>
+	</sql>
+
+	<sql id="setSettlementDateById">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+				SET settlement_date = :settlementDate
+			WHERE
+				lender_apply_id = :lenderApplyId
+			 	
+    	]]>
+	</sql>
+
+	<sql id="getLenderApplyByCode">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			lender_code = :lenderCode
+		]]>
+	</sql>
+
+	<sql id="updateFormStatusByIds">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET form_status = :formStatus
+			WHERE
+				lender_apply_id in (:ids)
+    	]]>
+	</sql>
+	
+	<sql id="updateDueApplyStatus">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET due_status = :dueStatus
+			WHERE
+				lender_apply_id =:id
+    	]]>
+	</sql>
+	
+	<sql id="queryByPayWay">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			parent_id,
+			due_date,
+			due_status,
+			proc_ins_id,
+			recovery		
+		FROM t_lender_apply
+		WHERE 
+			1=1
+		AND	pay_way_id = 2
+		]]>
+	</sql>
+</sqlMap>	  

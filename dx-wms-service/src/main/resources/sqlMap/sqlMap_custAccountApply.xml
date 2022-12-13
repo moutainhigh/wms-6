@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custAccountApply">
+
+	<!-- 根据页面查询 -->
+	<sql id="queryForPage">
+		<![CDATA[
+			SELECT
+			    ca.cust_account_id custAccountId,
+			    ca.lender_cust_code lenderCustCode,
+			    ca.id_card idCard,
+			    ca.cust_name custName,
+			    ca.mobile mobile,
+			    ca.open_date openDate,
+			    ca.data_status dataStatus
+			FROM
+			    t_cust_account ca
+			WHERE
+				ca.data_status != 'D' 
+	         <#if idCard?exists && idCard!="">
+	        	 AND ca.id_card = :idCard
+	       	 </#if> 
+	       	 <#if custName?exists && custName!="">
+             	AND ca.cust_name LIKE CONCAT ('%',:custName,'%')
+             </#if> 
+             <#if mobile?exists && mobile!="">
+             	AND ca.mobile = :mobile
+             </#if> 
+             <#if lenderCustCode?exists && lenderCustCode!="" >
+            	 AND ca.lender_cust_code = :lenderCustCode
+             </#if>
+             <#if managerId?exists && managerId!="">
+             	AND ca.create_user = :managerId
+             </#if>  
+             <#if openDateBegin?exists && openDateBegin!="">
+           	 	AND ca.open_date >= :openDateBegin
+             </#if>
+             <#if openDateEnd?exists && openDateEnd!="">
+             	AND ca.open_date<= :openDateEnd
+             </#if>
+             ORDER BY open_date DESC,update_time DESC
+    	]]>
+	</sql>
+
+
+	<sql id="queryChangeInfoForPage">
+		<![CDATA[
+			SELECT
+				ca.cust_account_id,
+				ca.lender_cust_code,
+				ca.id_card,
+				ca.cust_name,
+				ca.mobile,
+				ca.open_date,
+				ca.create_user,
+				ca.create_time,
+				ca.update_user,
+				ca.update_time,
+				ca.data_status,
+				cal.account_level_id
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_account_level cal ON cal.cust_account_id = ca.cust_account_id
+			WHERE
+				1 = 1
+				AND (ca.data_status = 'S'
+				OR (
+					ca.data_status = 'C'
+					AND ca.cust_account_id IN (
+						SELECT
+							ca.cust_account_id
+						FROM
+							t_lender_apply la
+						LEFT JOIN t_lender_apply_log lal ON lal.lender_apply_id = la.lender_apply_id
+						LEFT JOIN t_cust_account ca ON ca.lender_cust_code = la.lender_cust_code
+						WHERE
+							lal.is_current = 1
+						AND lal.current_step_key IN (
+							'match',
+							'creditorConfirm',
+							'contributiveConfirm',
+							'investmentConfirm'
+						)
+					)
+				)
+			)
+	         <#if idCard?exists && idCard!="">
+	         AND ca.id_card = :idCard
+	       	 </#if> 
+	       	 <#if custName?exists && custName!="">
+             AND ca.cust_name = :custName
+             </#if> 
+             <#if mobile?exists && mobile!="">
+             AND ca.mobile = :mobile
+             </#if> 
+             <#if lenderCustCode?exists && lenderCustCode!="" >
+             AND ca.lender_cust_code = :lenderCustCode
+             </#if>
+             <#if accountStatus?exists && accountStatus!="" >
+             AND ca.data_status = :accountStatus
+             </#if>
+             ORDER BY ca.create_user ASC,ca.lender_cust_code ASC
+             ]]>
+	</sql>
+
+</sqlMap>	
+      	

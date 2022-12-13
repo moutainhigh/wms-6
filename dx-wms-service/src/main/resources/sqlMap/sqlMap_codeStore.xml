@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="codeStore">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			code_store_id,
+			code_version_id,
+			code_store_val,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_code_store
+			WHERE 
+				code_store_id = :id
+    	]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 	
+    		code_store_id,
+			code_version_id,
+			code_store_val,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_code_store
+		]]>
+	</sql>    
+</sqlMap>	

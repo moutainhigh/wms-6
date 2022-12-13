@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="product">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			product_id,
+			product_code,
+			app_code,
+			product_name,
+			product_level,
+			up_product_id,
+			amount_lower_limit,
+			amount_upper_limit,
+			amount_step,
+			product_desc,
+			target_object,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_product
+			WHERE 
+				product_id = :id
+    	]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+			product_id,
+			product_code,
+			app_code,
+			product_name,
+			product_level,
+			up_product_id,
+			amount_lower_limit,
+			amount_upper_limit,
+			amount_step,
+			product_desc,
+			target_object,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_product
+		]]>
+	</sql>
+	<sql id="getProductByApp">
+		<![CDATA[
+    	SELECT 
+			product_id,
+			product_code,
+			app_code,
+			product_name,
+			product_level,
+			up_product_id,
+			amount_lower_limit,
+			amount_upper_limit,
+			amount_step,
+			product_desc,
+			target_object,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_product
+		WHERE
+			data_status = 'A'
+			<#if appCode?exists && appCode!="">
+				AND  app_code = :appCode
+			</#if>
+			ORDER BY product_id ASC
+		]]>
+	</sql>
+
+	<!--根据应用Code 父产品Id查询所属的产品列表 -->
+	<sql id="getProductByAppAndProductId">
+		<![CDATA[
+    	SELECT
+			p.product_id,
+			p.product_code,
+			p.app_code,
+			p.product_name,
+			p.product_level,
+			p.up_product_id,
+			p.amount_lower_limit,
+			p.amount_upper_limit,
+			p.amount_step,
+			p.product_desc,
+			p.target_object,
+			p.create_user,
+			p.create_time,
+			p.update_user,
+			p.update_time,
+			p.data_status
+		FROM
+			t_product p
+		WHERE
+			p.app_code = :appCode
+		<#if productLevel?exists && productLevel!="">
+		AND p.product_level = :productLevel
+		</#if>
+		<#if productId?exists && productId!="">
+		AND p.up_product_id = :productId
+		</#if>
+		AND p.data_status = 'A'
+		ORDER BY p.product_id ASC
+		]]>
+	</sql>
+</sqlMap>	

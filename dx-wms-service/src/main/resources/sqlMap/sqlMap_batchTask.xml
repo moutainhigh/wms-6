@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="batchTask">
+	<sql id="queryAccount">
+		<![CDATA[
+		SELECT
+			mu_.match_cust_code custCode,
+			im_.accountAmount accountAmount
+		FROM
+			t_match_user mu_
+		INNER JOIN (
+			SELECT
+				match_user_id,
+				SUM(current_total_amount) accountAmount
+			FROM
+				t_investment_pool
+			WHERE
+				(
+					data_status = 'T'
+					AND trans_time >= '2016-12-17 00:00:00'
+				)
+			OR data_status = 'O'
+			OR (
+				data_status = 'S'
+			AND interest_begin_time < '2016-12-17 00:00:00'
+			AND (trans_time >= '2016-12-17 00:00:00' OR trans_time IS NULL)
+			)
+			GROUP BY
+				match_user_id
+		) im_ ON mu_.match_user_id = im_.match_user_id
+    	]]>
+	</sql>
+	
+	<sql id="queryPays">
+		<![CDATA[
+		SELECT
+			*
+		FROM
+			t_investment_pool
+		WHERE
+			pay_time <= SYSDATE()
+		AND data_status = 'S';
+    	]]>
+	</sql>
+</sqlMap>	    	

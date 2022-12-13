@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="batchSync">
+
+	<sql id="syncTrans">
+		<![CDATA[
+		SELECT
+			ip_.*,
+			mbb_.biz_code lenderCode
+		FROM
+			t_investment_pool ip_ LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+			ip_.product_id IN (13, 14, 15, 16, 34)
+		AND ip_.interest_begin_time IS NOT NULL
+		AND ip_.data_status = 'S'
+    	]]>
+	</sql>
+	<sql id="syncPayTime">
+		<![CDATA[
+		SELECT
+			*
+		FROM
+			t_investment_pool
+		WHERE
+			data_status IN ('S')
+		AND trans_time IS NOT NULL
+		AND bill_day = 16
+    	]]>
+	</sql>
+	<sql id="syncTransFund">
+		<![CDATA[
+		SELECT
+			ip_.*, mbb_.biz_code lenderCode
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+			bill_day = 16
+		AND ip_.current_period > ip_.init_period
+		AND ip_.data_status = 'S'
+		and ip_.product_id not in (11,12)
+		ORDER BY trans_time DESC
+    	]]>
+	</sql>
+	<sql id="syncPool">
+		<![CDATA[
+		SELECT
+			*
+		FROM
+			t_investment_pool
+		WHERE
+			data_status IN ('S', 'M', 'P')
+		ANd product_id IN (13,14,15,16);
+    	]]>
+	</sql>
+</sqlMap>	    	

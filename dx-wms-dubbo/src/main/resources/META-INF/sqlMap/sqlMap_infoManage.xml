@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="infoManage">
+	<!-- 根据页面查询 -->
+	<sql id="queryForPage">
+		<![CDATA[
+			SELECT
+				la.lender_apply_id lenderApplyId,
+				la.lender_code lenderCode,
+				ca.cust_name custName,
+				ca.id_card idCard,
+				la.product_id productId,
+				la.lender_amount lenderAmount,
+				la.sign_date signDate,
+				la.form_status formStatus,
+				la.settlement_date settleDate,
+				la.statement_date statementDate,
+				la.due_date dueDate
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca 
+			ON la.cust_account_id = ca.cust_account_id
+			WHERE
+				la.data_status = 'A'
+			AND la.form_status IS NOT NULL
+			<#if lenderCode ?exists && lenderCode!="">
+				AND la.lender_code = :lenderCode 
+			</#if> 
+			<#if custName?exists && custName!="">
+				AND cust_name LIKE CONCAT('%' ,:custName, '%') 
+			</#if> 
+			<#if idCard?exists && idCard!="">
+				AND ca.id_card = :idCard 
+			</#if> 
+			<#if productId ?exists && productId!="">
+				AND la.product_id = :productId 
+			</#if> 
+			<#if currentStep?exists && currentStep!="">
+				AND la.form_status = :currentStep 
+			</#if> 
+
+				ORDER BY la.sign_date DESC,la.update_time DESC
+    	]]>
+	</sql>
+</sqlMap>

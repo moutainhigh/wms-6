@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="transView">
+
+	<sql id="statQuery">
+		<![CDATA[
+		SELECT
+			pay_time date,
+			COUNT(investment_pool_id) num,
+			SUM(current_total_amount) amount
+		FROM
+			t_investment_pool
+		WHERE
+			data_status = 'T'
+		AND trans_time IS NOT NULL
+		AND pay_time IS NOT NULL
+		<#if createDateBegin?exists && createDateBegin!="">
+			AND pay_time >= :createDateBegin
+		</#if>
+		<#if createDateEnd?exists && createDateEnd!="">
+			AND pay_time <= :createDateEnd
+		</#if>
+		GROUP BY pay_time 
+		ORDER BY pay_time DESC
+		]]>
+	</sql>
+	
+	<sql id="detailQuery">
+	<![CDATA[
+		SELECT
+			bill_day billDay,
+			COUNT(investment_pool_id) num,
+			SUM(current_total_amount) amount
+		FROM
+			t_investment_pool
+		WHERE
+			data_status = 'T'
+		AND trans_time IS NOT NULL
+		AND pay_time IS NOT NULL
+		<#if createDateBegin?exists && createDateBegin!="">
+			AND pay_time >= :createDateBegin
+		</#if>
+		<#if createDateEnd?exists && createDateEnd!="">
+			AND pay_time <= :createDateEnd
+		</#if>
+		GROUP BY bill_day
+	]]>
+	</sql>
+</sqlMap>	

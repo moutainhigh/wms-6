@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="accountInfo">
+
+	<sql id="queryByCustCode">
+		<![CDATA[
+		SELECT
+			al_.account_level_name name,
+			alr_.service_rate_month rate,
+			all_.account_current_amount amount
+		FROM
+			t_account_level al_
+		INNER JOIN 
+			t_account_level_log all_ 
+		ON 
+			al_.account_level_id = all_.account_level_id
+		left join t_account_level_rate alr_
+		on	alr_.account_level_id = al_.account_level_id
+		WHERE 
+			all_.is_current = 1
+		AND 
+			all_.cust_code = :custCode
+		AND alr_.vesion_key = :version
+	
+    	]]>
+	</sql>
+
+</sqlMap>	  		

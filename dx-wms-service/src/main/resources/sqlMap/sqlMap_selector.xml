@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="selector">
+	<sql id="view">
+		<![CDATA[
+		SELECT
+			cb_.cust_name custName,
+			cb_.id_card idCard,
+			cb_.mobile mobile,
+			cb_.id_type idType,
+			cb_.sex sex,
+			cb_.cust_code code,
+			cb_.cust_id id
+		FROM
+			t_cust_base cb_
+		WHERE
+			cb_.create_user = :userId
+		AND cb_.data_status != 'D'
+		AND cb_.id_type > 0 
+		AND cb_.sex > 0
+		AND cb_.id_card != ''
+		AND cb_.cust_code NOT IN (
+			SELECT
+				ca_.cust_code
+			FROM
+				t_cust_account ca_
+			WHERE
+				ca_.create_user = :userId
+			AND ca_.data_status != 'D'
+		)
+		<#if custName?exists && custName!="">	
+			AND cb_.cust_name = :custName
+		</#if>
+		<#if idCard?exists && idCard!="">	
+			AND cb_.id_card = :idCard
+		</#if>	
+    	]]>
+	</sql>
+
+	<sql id="account">
+		<![CDATA[
+			SELECT
+				ca_.cust_name custName,
+				ca_.id_card idCard,
+				ca_.mobile mobile,
+				ca_.id_type idType,
+				ca_.sex sex,
+				ca_.lender_cust_code code,
+				ca_.cust_account_id id
+			FROM
+				t_cust_account ca_
+			WHERE
+				ca_.data_status != 'D'
+			AND ca_.lender_cust_code is NOT NULL
+			AND
+				ca_.create_user = :userId
+			<#if custName?exists && custName!="">	
+				AND ca_.cust_name = :custName
+			</#if>
+			<#if idCard?exists && idCard!="">	
+				AND ca_.id_card = :idCard
+			</#if>	
+    	]]>
+	</sql>
+</sqlMap>	  		

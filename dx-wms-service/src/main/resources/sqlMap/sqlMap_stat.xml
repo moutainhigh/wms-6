@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="stat">
+	<sql id="creditQueue">
+		<![CDATA[
+			SELECT
+				SUM(biz_total_amount) totalAmount,
+				COUNT(match_biz_base_id) totalCount,
+				biz_bill_day billDay
+			FROM
+				t_match_biz_base
+			WHERE
+				data_status = 'A'
+			AND
+				biz_category = 1
+			GROUP BY
+				biz_bill_day;
+    	]]>
+	</sql>
+	<sql id="investQueue">
+		<![CDATA[
+			SELECT
+				SUM(biz_total_amount) totalAmount,
+				COUNT(match_biz_base_id) totalCount,
+				biz_product_id productId
+			FROM
+				t_match_biz_base
+			WHERE
+				data_status = 'A'
+			AND
+				biz_category = 2		
+			GROUP BY 
+				biz_product_id;
+		]]>
+	</sql>
+	<sql id="queryMatch">
+        <![CDATA[
+            SELECT
+            	cp_.match_day matchDay,
+				SUM(cp_.current_total_amount) totalAmount,
+				SUM(cp_.current_done_amount) usedTotalAmount,
+				SUM(cp_.current_undo_amount) remainTotalAmount
+			FROM
+				t_creditor_pool cp_
+			WHERE
+				cp_.data_status != 'D'
+			GROUP BY
+				cp_.match_day
+        ]]>
+	</sql>
+</sqlMap>	    	

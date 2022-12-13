@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="reportManagement">
+
+    
+    <!-- 执委会报表信息分页查询 -->    
+    <sql id="queryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  la.match_date,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            <#if lenderApplyId?exists>
+            AND la.lender_apply_id = lenderApplyId
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    <!-- 区域经理报表信息分页查询 -->    
+    <sql id="areaQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    
+    <!-- 分公司经理报表信息分页查询 -->    
+    <sql id="branchOfficeQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    
+    
+    <!-- 客户经理报表信息分页查询 -->    
+    <sql id="accountManagerQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if createUser?exists && createUser!="">
+            AND la.create_user = :createUser
+            </#if>
+            <#if custName?exists && custName!="">
+            AND t_max.cust_name like CONCAT ('%',:custName,'%')
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    <!-- 大团报表信息分页查询 -->    
+    <sql id="bigTeamQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    <!-- 小团报表信息分页查询 -->    
+    <sql id="smallTeamQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    <!-- 销售客服信息分页查询 -->    
+    <sql id="customenrServiceQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            <#if createUser?exists && createUser!="">
+            AND la.create_user = :createUser
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+    <!-- 营业部信息分页查询 -->    
+    <sql id="salesDepartmentQueryForPage">
+	    <![CDATA[
+	        SELECT
+	        DISTINCT
+		  la.sign_date,
+		  la.lender_code,
+		  t_max.cust_name,
+		  t_max.sex,
+		  t_max.id_card,
+		  t_max.msg_way,
+		  t_max.email,
+		  t_max.mobile,
+		  t_max.birth_date,
+		  t_max.area_code,
+		  t_max.street_info,
+		  t_max.zip_code,
+		  t_max.cust_category,
+		  t_max.province_region_code,
+		  t_max.district_region_code,
+		  t_max.city_region_code,
+		  la.match_date,
+		  la.product_id,
+		  la.lender_amount,
+		  la.settlement_date,
+		  la.statement_date,
+		  la.expect_lender_date_begin,
+		  la.expect_lender_date_end,
+		  la.pay_way_id,
+		  cf.account_name,
+		  cf.bank_category give_bank_category,
+		  cf.account_num give_account_num,
+		  cf.sub_bank give_sub_bank,
+		  cf.province_region_code give_province_region_code,
+		  cf.city_region_code give_city_region_code,
+		  cf1.bank_category get_bank_category,
+		  cf1.account_num get_account_num,
+		  cf1.sub_bank get_sub_bank,
+		  cf1.province_region_code get_province_region_code,
+		  cf1.city_region_code get_city_region_code,  
+		  la.team_id,
+		  la.create_user,
+		  la.org_id
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = la.lender_apply_id and cf.account_category=1 and cf.data_status='A'
+		LEFT JOIN t_cust_finance cf1 ON cf1.lender_apply_id = la.lender_apply_id and cf1.account_category=2 and cf1.data_status='A'
+		LEFT JOIN (
+			SELECT
+		    ca.cust_name,
+		    ca.sex,
+		    ca.id_card,
+		    ca.msg_way,
+		    cc.email,
+		    ca.mobile,
+			ca.cust_account_id,
+			ca.birth_date,
+			cc.area_code,
+		    cc.street_info,
+		    cc.zip_code,
+		    ca.cust_category,
+		    cc.city_region_code,
+		    ca.team_id,
+		    cc.province_region_code,
+		    cc.district_region_code
+			FROM
+				t_cust_account ca
+			LEFT JOIN t_cust_comm cc ON ca.cust_account_id = cc.cust_account_id
+		    )t_max ON t_max.cust_account_id = la.cust_account_id WHERE la.form_status IN (21,22,23)
+	        <#if orgId?exists && orgId!="">
+	        AND la.org_id = :orgId
+	        </#if> 
+	        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+            </#if> 
+            <#if lenderAmountArea ?exists && lenderAmountArea=1>
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=2>
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=3>
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=4>
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=5>
+             AND la.lender_amount >1000000 
+             </#if>
+            <#if teamIds?exists>
+            AND la.team_id IN (:teamIds) 
+            </#if>
+            <#if areaOrgIds?exists>
+            AND la.org_id IN (:areaOrgIds) 
+            </#if>
+            <#if branchOfficeIds?exists>
+            AND la.org_id IN (:branchOfficeIds) 
+            </#if>
+            <#if teamId?exists && teamId!="">
+            AND la.team_id = :teamId
+            </#if>
+            <#if statementDate?exists && statementDate!="">
+            AND la.statement_date = :statementDate
+            </#if>  
+           	<#if settlementDateBeg?exists>
+            AND la.settlement_date >= :settlementDateBeg
+            </#if>
+            <#if settlementDateEnd?exists>
+            AND la.settlement_date <= :settlementDateEnd
+            </#if>
+            ORDER BY la.settlement_date ASC, la.lender_code ASC
+	    ]]>     
+    </sql>
+</sqlMap>

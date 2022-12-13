@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="firstView">
+
+	<sql id="queryInvest">
+		<![CDATA[
+		SELECT
+			ip_.investment_pool_id poolId,
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			mbb_.zip_code zipCode,
+			mbb_.cust_address custAddress,
+			mbb_.biz_code lenderCode,
+			ip_.product_id productId,
+			ip_.init_total_amount initTotalAmount,
+			ip_.init_match_time initMatchTime,
+			ip_.init_bill_date initBillDate,
+			ip_.bill_day billDay,
+			ip_.interest_begin_time effectTime	
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+		<#if lenderCode?exists && lenderCode!="">
+			mbb_.biz_code = :lenderCode
+		</#if>
+		]]>
+	</sql>
+
+	<sql id="queryCredit">
+		<![CDATA[
+		SELECT
+			mbb_c_.cust_name custName,
+			mbb_c_.id_card idCard,
+			mr_.transfer_total_amount transAmount,
+			mr_.pay_give_amount payAmount,
+			mbb_c_.biz_attr attr,
+			cp_.init_bill_date repayDate,
+			cp_.init_period initPeriod,
+			cp_.rate_year rateYear,
+			mr_.transfer_ea_capital_amount transCapital,
+			mr_.transfer_ea_interest_amount transInterest
+		FROM
+			t_match_result mr_
+		LEFT JOIN t_creditor_pool cp_ ON mr_.creditor_pool_id = cp_.creditor_pool_id
+		LEFT JOIN t_match_biz_base mbb_c_ ON cp_.match_biz_base_id = mbb_c_.match_biz_base_id
+		WHERE
+			mr_.data_status = 'A'
+		<#if poolId?exists && poolId!="">	
+			AND mr_.investment_pool_id = :poolId
+		</#if>
+		AND
+			mr_.current_period = 1
+		]]>
+	</sql>
+	
+	<sql id="queryInvestPool">
+		<![CDATA[
+		SELECT
+			ip_.investment_pool_id poolId,
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			mbb_.zip_code zipCode,
+			mbb_.cust_address custAddress,
+			mbb_.biz_code lenderCode,
+			ip_.product_id productId,
+			ip_.init_total_amount initTotalAmount,
+			ip_.init_match_time initMatchTime,
+			ip_.init_bill_date initBillDate,
+			ip_.bill_day billDay	
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+		<#if lenderCode?exists && lenderCode!="">
+			mbb_.biz_code = :lenderCode
+		</#if>
+		AND ip_.data_status = 'A'
+		]]>
+	</sql>
+</sqlMap>	

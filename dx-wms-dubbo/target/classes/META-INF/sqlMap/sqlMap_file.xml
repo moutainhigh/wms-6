@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="file">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELEC
+			file_id,
+			file_type_id,
+			file_source_name,
+			file_save_name,
+			file_size,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file
+			WHERE 
+				file_id = :id
+		]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		file_id,
+			file_type_id,
+			file_source_name,
+			file_save_name,
+			file_size,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file
+    	]]>
+	</sql>    
+</sqlMap>	    	
+    		
+    		

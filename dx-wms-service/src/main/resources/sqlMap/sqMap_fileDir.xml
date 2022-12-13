@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="fileDir">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			file_dir_id,
+			file_dir_name,
+			file_dir_key,
+			file_dir_level,
+			up_file_dir_id,,
+			file_dir_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file_dir
+			WHERE 
+				file_dir_id, = :id
+    	]]>
+	</sql>
+	
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			file_dir_id,
+			file_dir_name,
+			file_dir_key,
+			file_dir_level,
+			up_file_dir_id,,
+			file_dir_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_file_dir
+		]]>
+	</sql>    
+</sqlMap>	

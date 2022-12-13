@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+    http://www.springframework.org/schema/beans/spring-beans.xsd        
+    http://code.alibabatech.com/schema/dubbo        
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="wms-app" />
+
+	<!-- 使用zookeeper注册中心暴露服务地址 -->
+	<dubbo:registry address="${component.dubbo.common.ipAddressList}" />
+
+	<!-- 用dubbo协议在20880端口暴露服务 -->
+	<dubbo:protocol name="dubbo" port="${wms.dubbo.protocol.port}" />
+
+	<!-- 用springmvc协议在端口暴露服务 -->
+	<dubbo:protocol name="springmvc" server="tomcat" port="8090"
+		register="false" />
+
+	<!-- 从注册中心发现监控中心地址 -->
+	<dubbo:monitor protocol="registry" />
+	
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.report.IFundReportService"
+		timeout="${wms.dubbo.service.timeout}" ref="fundReportService" />
+	<dubbo:service interface="com.dx.cmm.service.report.IPastReportService"
+		timeout="${wms.dubbo.service.timeout}" ref="pastService" />
+	<dubbo:service interface="com.dx.cmm.service.report.IMaturityService"
+		timeout="${wms.dubbo.service.timeout}" ref="maturityService" />
+	<dubbo:service interface="com.dx.cmm.service.report.IPastViewService"
+		timeout="${wms.dubbo.service.timeout}" ref="pastViewService" />
+	<dubbo:service interface="com.dx.cmm.service.infoManage.InfoManageService"
+		timeout="${wms.dubbo.service.timeout}" ref="infoManageService" />	
+	
+	
+	<!-- 和本地bean一样实现服务 -->	
+	<bean id="fundReportService" class="com.dx.cmm.service.report.FundReportServiceImpl" />
+	<bean id="pastService" class="com.dx.cmm.service.report.PastReportServiceImpl" />
+	<bean id="maturityService" class="com.dx.cmm.service.report.MaturityReportServiceImpl" />
+	<bean id="pastViewService" class="com.dx.cmm.service.report.PastViewServiceImpl" />
+	<bean id="infoManageService" class="com.dx.cmm.service.infoManage.InfoManageServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.IMatchPushService"
+		timeout="${wms.dubbo.service.timeout}" ref="matchPushService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="matchPushService" class="com.dx.cmm.service.PusherGateway" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.credit.ICreditService"
+		timeout="${wms.dubbo.service.timeout}" ref="creditService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="creditService" class="com.dx.cmm.service.credit.CreditGateway" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.IProductService"
+		timeout="${wms.dubbo.service.timeout}" ref="productService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="productService" class="com.dx.op.service.ProductServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.IRefundTimeService"
+		timeout="${wms.dubbo.service.timeout}" ref="refundTimeService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="refundTimeService" class="com.dx.op.service.RefundTimeServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cms.service.IFileService"
+		timeout="${wms.dubbo.service.timeout}" ref="fileService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="fileService" class="com.dx.cms.service.impl.FileServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.ILenderManagermentService"
+		timeout="${wms.dubbo.service.timeout}" ref="lenderManagermentService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="lenderManagermentService" class="com.dx.wms.service.impl.LenderManagermentServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.push.ILenderPushService"
+		timeout="${wms.dubbo.service.timeout}" ref="lenderPushService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="lenderPushService" class="com.dx.wms.service.impl.LenderPushServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.ILenderLogService"
+		timeout="${wms.dubbo.service.timeout}" ref="lenderLogService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="lenderLogService" class="com.dx.wms.service.impl.LenderLogServiceImpl" />
+
+	<!--生成远程服务代理，可以和本地bean一样使用demoService -->
+	<dubbo:reference id="wmsAmService" interface="com.dx.ccs.service.IAMService"
+		check="false" />
+
+	<!--生成远程服务代理，可以和本地bean一样使用demoService -->
+	<dubbo:reference id="ruleTriggerEngineService"
+		interface="com.dx.rule.service.IRuleTriggerEngineService" check="false" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.ILenderQueryService"
+		timeout="${wms.dubbo.service.timeout}" ref="lenderQueryService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="lenderQueryService" class="com.dx.wms.service.impl.LenderQueryServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.wms.service.apply.ILenderApplyService"
+		timeout="${wms.dubbo.service.timeout}" ref="lenderApplyService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="lenderApplyService" class="com.dx.wms.service.impl.LenderApplyServiceImpl" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.invest.IInvestService"
+		timeout="${wms.dubbo.service.timeout}" ref="investService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="investService" class="com.dx.cmm.service.invest.InvestGatway" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.match.IMatchResService"
+		timeout="${wms.dubbo.service.timeout}" ref="matchResService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="matchResService" class="com.dx.cmm.service.match.MatchResGateway" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.back.IMatchBackService"
+		timeout="${wms.dubbo.service.timeout}" ref="matchBackService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="matchBackService" class="com.dx.cmm.service.back.BackGateway" />
+
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.block.IBlockService"
+		timeout="${wms.dubbo.service.timeout}" ref="blockService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="blockService" class="com.dx.cmm.service.block.BlockGateway" />
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.trans.IMatchTransService"
+		timeout="${wms.dubbo.service.timeout}" ref="transService" />
+
+	<!-- 和本地bean一样实现服务 -->
+	<bean id="transService" class="com.dx.cmm.service.trans.TransGateway" />
+	
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.interest.InterestService"
+		timeout="${wms.dubbo.service.timeout}" ref="interestGateway" />
+	<!-- 和本地bean一样实现服务 -->	
+	<bean id="interestGateway" class="com.dx.cmm.service.interest.InterestGateway" />
+	
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.report.ITransReportService"
+		timeout="${wms.dubbo.service.timeout}" ref="transReportService" />
+	<!-- 和本地bean一样实现服务 -->	
+	<bean id="transReportService" class="com.dx.cmm.service.report.TransReportServiceImpl" />
+	
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.dx.cmm.service.report.IEffectReportService"
+		timeout="${wms.dubbo.service.timeout}" ref="effectReportService" />
+	<!-- 和本地bean一样实现服务 -->	
+	<bean id="effectReportService" class="com.dx.cmm.service.report.EffectReportServiceImpl" />
+</beans>

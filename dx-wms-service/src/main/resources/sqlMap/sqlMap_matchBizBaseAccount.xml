@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchBizBaseAccount">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			match_biz_base_account_id,
+			match_biz_base_id,
+			base_account_name,
+			base_account_bank,
+			base_account_bank_sub,
+			base_account,
+			base_account_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_match_biz_base_account
+		WHERE 
+			match_biz_base_account_id = :id
+		AND 
+			data_status = 'A'	
+    	]]>
+	</sql>	
+	
+	
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT
+			match_biz_base_account_id,
+			match_biz_base_id,
+			base_account_name,
+			base_account_bank,
+			base_account_bank_sub,
+			base_account,
+			base_account_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_match_biz_base_account
+		WHERE 
+			data_status = 'A'
+		]]>
+	</sql>
+	
+	<sql id="queryByBaseId">
+		<![CDATA[
+    	SELECT
+			match_biz_base_account_id,
+			match_biz_base_id,
+			base_account_name,
+			base_account_bank,
+			base_account_bank_sub,
+			base_account,
+			base_account_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_match_biz_base_account
+		WHERE 
+			match_biz_base_id = :baseId
+		AND
+			data_status = 'A'
+		]]>
+	</sql>
+</sqlMap>		
+		

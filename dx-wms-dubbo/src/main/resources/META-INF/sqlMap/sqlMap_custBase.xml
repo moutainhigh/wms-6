@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custBase">
+	<!-- 根据custCode查询 -->
+	<sql id="query">
+	    <![CDATA[
+	        SELECT
+	            cust_id,
+	            cust_code,
+	            cust_name,
+	            id_type,
+	            id_card,
+	            mobile,
+	            sex,
+	            cust_source,
+	            cust_source_other,
+	            create_user,
+	            create_time,
+	            update_user,
+	            update_time,
+	            data_status
+	        FROM
+	            t_cust_base
+	        WHERE 
+	            cust_code = :custCode
+       ]]>
+	</sql>
+</sqlMap>	  		

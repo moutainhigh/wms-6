@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="pushSuccess">
+
+	<sql id="queryPush">
+		<![CDATA[
+			SELECT
+				la.lender_apply_id applyId,
+				la.lender_code lenderCode,
+				la.settlement_date settlementDate
+			FROM
+				t_lender_apply_log ll
+			LEFT JOIN t_lender_apply la ON la.lender_apply_id = ll.lender_apply_id
+			WHERE
+				ll.current_step_key = 'investmentConfirm'
+			AND ll.is_current = 1
+			AND ll.data_status = 'A'
+			AND la.settlement_date IS NOT NULL	
+		]]>
+	</sql>
+</sqlMap>	  

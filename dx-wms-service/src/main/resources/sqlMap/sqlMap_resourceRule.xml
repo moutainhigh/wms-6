@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="fileType">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELEC
+			file_rule_id,
+			file_rule_name,
+			file_rule_key,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_resource_rule
+			WHERE 
+				file_rule_id = :id
+		]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 		
+    		file_rule_id,
+			file_rule_name,
+			file_rule_key,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_resource_rule
+		]]>
+	</sql>
+</sqlMap>

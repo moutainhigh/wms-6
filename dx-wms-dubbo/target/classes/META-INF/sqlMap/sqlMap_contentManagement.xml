@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="contentManagement">
+	<!-- 查询影像文件夹 -->
+	<sql id="queryForFolders">
+        <![CDATA[
+            SELECT
+				fd.file_dir_id,
+				fd.file_dir_key,
+				fd.file_dir_name,
+				fd.file_dir_level,
+				fd.up_file_dir_id,
+				fd.file_dir_desc,
+				dr.dir_res_id,
+				dr.dir_res_index,
+				dr.is_edit,
+				dr.dir_res_key,
+				rs.res_id,
+				rs.res_key,
+				rs.res_name,
+				rs.app_code,
+				rs.res_desc
+			FROM
+				t_file_dir fd
+			LEFT JOIN t_dir_res dr ON dr.dir_id = fd.file_dir_id
+			LEFT JOIN t_res rs ON rs.res_id = dr.res_id
+			WHERE
+				fd.data_status = 'A'
+			AND dr.data_status = 'A'
+			AND rs.data_status = 'A' 
+			AND fd.up_file_dir_id != 0 AND fd.file_dir_id !=8
+            AND rs.app_code = :appCode
+            AND rs.res_key = :resKey
+			ORDER BY
+				dr.dir_res_index ASC;
+        ]]>
+	</sql>
+
+
+	<!-- 查询某个影像文件夹下尚未生效的影像文件 -->
+	<sql id="queryArray">
+        <![CDATA[
+            SELECT
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code,
+				fe.file_type_id,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				ft.file_type_key,
+				fe.data_status
+			FROM
+				t_file_dir_relation fr
+			LEFT JOIN t_file fe ON fe.file_id = fr.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+			1=1
+			AND ft.data_status = 'A'
+			AND fr.app_code = :appCode
+            AND fr.open_code in (:openCodes)
+				AND (fr.data_status != 'D' || fr.data_status IS NULL)
+				AND (fe.data_status != 'D' || fr.data_status IS NULL)
+			<#if fileDirId?exists >
+				AND	fr.file_dir_id = :fileDirId
+			</#if>
+            ORDER BY fe.file_source_name ASC
+        ]]>
+	</sql>
+
+
+	<!-- 逻辑删除表t_file_dir_relation中的文件关系记录 -->
+	<sql id="deleteFileDir">
+        <![CDATA[
+           UPDATE t_file_dir_relation fr SET fr.data_status = 'D',fr.update_user = :user 
+           WHERE fr.file_dir_id = :fileDirId AND file_id = :fileId AND fr.app_code = :appCode;
+        ]]>
+	</sql>
+
+	<!-- 逻辑删除表t_file中的文件记录 -->
+	<sql id="deleteFile">
+        <![CDATA[
+            UPDATE t_file fe set fe.data_status = 'D',fe.update_user = :user 
+            WHERE fe.file_id = :fileId;
+        ]]>
+	</sql>
+
+	<sql id="queryFoldersByDirIds">
+        <![CDATA[
+        	SELECT DISTINCT
+				fd.file_dir_id,
+				fd.file_dir_key,
+				fd.file_dir_name
+			FROM
+				t_file_dir fd
+			LEFT JOIN t_dir_res dr ON dr.dir_id = fd.file_dir_id
+			LEFT JOIN t_res rs ON rs.res_id = dr.res_id
+			WHERE
+				fd.data_status = 'A'
+			AND dr.data_status = 'A'
+			AND rs.data_status = 'A'
+			AND fd.up_file_dir_id != 0
+			AND rs.app_code = :appCode
+			AND fd.file_dir_id IN (:fileDirIds)
+			ORDER BY
+				dr.dir_res_index ASC;
+        ]]>
+	</sql>
+
+	<!-- 查询某个影像文件夹下所有的影像文件 -->
+	<sql id="queryForFiles">
+        <![CDATA[
+            SELECT
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code,
+				fe.file_type_id,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				ft.file_type_key,
+				fe.data_status
+			FROM
+				t_file_dir_relation fr
+			LEFT JOIN t_file fe ON fe.file_id = fr.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+				(fr.data_status != 'D' || fr.data_status IS NULL)
+			AND (fe.data_status != 'D' || fr.data_status IS NULL)
+			AND ft.data_status = 'A'
+            AND fr.app_code = :appCode
+            AND fr.file_dir_id = :fileDirId
+            AND fr.open_code IN (:openCodes)
+            ORDER BY fe.file_source_name ASC
+        ]]>
+	</sql>
+
+	<sql id="queryForFilesByOpenCode">
+        <![CDATA[
+            SELECT
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code,
+				fe.file_type_id,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				ft.file_type_key,
+				fe.data_status
+			FROM
+				t_file_dir_relation fr
+			LEFT JOIN t_file fe ON fe.file_id = fr.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+				fr.data_status IS NULL
+			AND fe.data_status IS NULL
+			AND ft.data_status = 'A'
+            AND fr.open_code = :openCode
+            ORDER BY fe.file_source_name ASC
+        ]]>
+	</sql>
+
+	<!-- 查询某个影像文件夹下尚未生效的影像文件 -->
+	<sql id="queryForFilesByOpenCodeAndNoStatus">
+        <![CDATA[
+            SELECT
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code,
+				fe.file_type_id,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				ft.file_type_key,
+				fe.data_status
+			FROM
+				t_file_dir_relation fr
+			LEFT JOIN t_file fe ON fe.file_id = fr.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+				fr.data_status IS NULL
+			AND fe.data_status IS NULL
+			AND ft.data_status = 'A'
+            AND fr.open_code = :openCode
+            AND fr.file_dir_id = :fileDirId
+            AND fr.app_code = :appCode
+            ORDER BY fe.file_source_name ASC
+        ]]>
+	</sql>
+
+	<!-- 查询某个影像文件夹下尚已经生效的影像文件 -->
+	<sql id="queryForFilesByOpenCodeAndStatus">
+        <![CDATA[
+            SELECT
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code,
+				fe.file_type_id,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				ft.file_type_key,
+				fr.data_status 
+			FROM
+				t_file_dir_relation fr
+			LEFT JOIN t_file fe ON fe.file_id = fr.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+			    (fr.data_status = 'A' OR fr.data_status IS NULL) 
+				AND (fe.data_status ='A' OR fe.data_status IS NULL )  
+		    <#if openCodes?exists >
+					AND	fr.open_code in (:openCodes)
+			</#if>
+            ORDER BY fe.file_source_name ASC
+        ]]>
+	</sql>
+
+	<!-- 逻辑删除表t_file_dir_relation中的文件关系记录 -->
+	<sql id="deleteFileOptOne">
+        <![CDATA[
+           UPDATE t_file_dir_relation fr SET fr.data_status = 'D',fr.update_user = :updateUser 
+           WHERE fr.file_dir_id = :fileDirId AND file_id = :fileId AND fr.app_code = :appCode;
+        ]]>
+	</sql>
+
+	<!-- 逻辑删除表t_file中的文件记录 -->
+	<sql id="deleteFileOptTwo">
+        <![CDATA[
+            UPDATE t_file fe set fe.data_status = 'D',fe.update_user = :updateUser 
+            WHERE fe.file_id = :fileId;
+        ]]>
+	</sql>
+
+	<!-- 生效表t_file_dir_relation中的文件关系记录 -->
+	<sql id="makeFileDirRelationStatusEffective">
+        <![CDATA[
+            UPDATE t_file_dir_relation fr SET fr.data_status = 'A',fr.open_code = :newOpenCode ,fr.update_user = :updateUser 
+            WHERE fr.open_code = :openCode AND fr.data_status IS NULL;
+        ]]>
+	</sql>
+
+	<!-- 生效表t_file中的文件记录 -->
+	<sql id="makeFileStatusEffective">
+        <![CDATA[
+            UPDATE t_file fe SET fe.data_status = 'A',fe.update_user = :updateUser 
+            WHERE fe.file_id in (:fileIds) AND fe.data_status IS NULL;
+        ]]>
+	</sql>
+
+	<!-- 校验文件是否是重复上传 -->
+	<sql id="judgeFileIsExist">
+        <![CDATA[
+            SELECT
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code,
+				fe.file_type_id,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				ft.file_type_key,
+				fe.data_status
+			FROM
+				t_file_dir_relation fr
+			LEFT JOIN t_file fe ON fe.file_id = fr.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+				ft.data_status = 'A'
+			AND (
+				fr.data_status = 'A'
+				OR fr.data_status IS NULL
+			)
+			AND 
+				fr.open_code = :openCode 
+			AND 
+				fe.file_source_name = :fileSourceName
+			ORDER BY
+				fe.file_source_name ASC
+        ]]>
+	</sql>
+
+	<!-- 理财影像文件名命名规则校验 -->
+	<sql id="checkFileIsInLineWithRuleForWMS">
+        <![CDATA[
+            SELECT
+				dr.dir_res_id,
+				dr.res_id,
+				dr.dir_id 'file_dir_id',
+				rs.app_code,
+				rs.res_key,
+				fd.file_dir_key
+			FROM
+				t_dir_res dr
+			LEFT JOIN t_res rs ON rs.res_id = dr.res_id
+			LEFT JOIN t_file_dir fd ON fd.file_dir_id = dr.dir_id
+			WHERE
+				dr.data_status = 'A'
+			AND rs.data_status = 'A'
+			AND fd.data_status = 'A'
+			AND dr.is_edit = '1'
+			AND fd.file_dir_id !=8
+			AND rs.app_code = :appCode
+			AND rs.res_key = :resKey
+			AND fd.file_dir_key = :fileDirKey
+        ]]>
+	</sql>
+
+	<!-- 根据文件主键来获取该影像文件的相关信息 -->
+	<sql id="queryFileInfoByFileId">
+        <![CDATA[
+            SELECT
+				fe.file_id,
+				fe.file_type_id,
+				ft.file_type_key,
+				fe.file_source_name,
+				fe.file_save_name,
+				fe.file_size,
+				fr.file_dir_relation_id,
+				fr.file_dir_id,
+				fr.file_save_dir,
+				fr.app_code,
+				fr.open_code
+			FROM
+				t_file fe
+			LEFT JOIN t_file_dir_relation fr ON fr.file_id = fe.file_id
+			LEFT JOIN t_file_type ft ON ft.file_type_id = fe.file_type_id
+			WHERE
+				fe.file_id in (:fileIds)
+        ]]>
+	</sql>
+
+	<!-- 查询支付凭证文件 -->
+	<sql id="queryVoucherPaymentFiles">
+        <![CDATA[
+            SELECT
+				fr.file_id
+			FROM
+				t_file_dir_relation fr
+			WHERE
+				fr.file_save_dir LIKE CONCAT('%',:resKey,'%' )
+			AND fr.open_code = :lenderCode
+			AND fr.data_status = 'A'
+			AND fr.data_status = :dataStatus;
+        ]]>
+	</sql>
+
+
+</sqlMap>	

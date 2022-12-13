@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="indexPage">
+
+	<!-- 1.客户基数(客户经理) -->
+	<sql id="queryForCustNumberByCreateUser">
+        <![CDATA[
+        	SELECT 
+        		IFNULL(COUNT(1),0) 'num'
+        	FROM 
+        		t_cust_base cb 
+        	WHERE 
+        		cb.create_user = :createUser 
+        	AND cb.data_status != 'D';
+        ]]>
+    </sql>
+    
+    <!-- 1.客户基数(销售客服) -->
+    <sql id="queryForCustNumberByOrgId">
+        <![CDATA[
+        	SELECT 
+        		IFNULL(COUNT(1),0) 'num'
+        	FROM 
+        		t_cust_base cb 
+        	WHERE 
+        		cb.create_user IN (:createUsers) 
+        	AND cb.data_status != 'D';
+        ]]>
+    </sql>
+    
+    <!-- 1.生效投资数(执委会) -->
+    <sql id="querySuccessApplyNum">
+        <![CDATA[
+        	SELECT
+				IFNULL(COUNT(1),0) 'num'
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				la.data_status = 'A'
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.current_step_key = 'success'
+			AND ll.current_action = 1
+        ]]>
+    </sql>
+    
+    <!-- 2.被拒绝的单数(客户经理/销售客服/执委会) -->
+	<sql id="queryForRefusedApplyNum">
+        <![CDATA[
+             SELECT
+                IFNULL(COUNT(1),0) 'num'
+            FROM
+                t_lender_apply la
+            LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+            WHERE
+                ll.is_current = '1'
+            AND
+                ll.current_step_key = 'resubmit'
+            AND ll.data_status = 'A'
+			<#if orgId?exists>
+			AND la.org_id = :orgId
+			</#if> 
+			<#if createUser?exists>
+			AND la.create_user = :createUser
+			</#if> 
+			AND la.data_status = 'A'
+        ]]>
+    </sql>
+    
+    <!-- 3.开户基数(客户经理) -->
+	<sql id="queryCustAccountNumByCreateUser">
+        <![CDATA[
+            SELECT 
+            	IFNULL(COUNT(1),0) 'num'
+            FROM 
+            	t_cust_account ca 
+            WHERE 
+            	ca.create_user = :createUser 
+            AND ca.data_status != 'D'
+			AND ca.lender_cust_code IS NOT NULL;
+        ]]>
+    </sql>
+    
+    <!-- 3.待质检申请单数(销售客服) -->
+	<sql id="queryForPendingQualityNum">
+        <![CDATA[
+            SELECT
+				IFNULL(COUNT(1),0) 'num'
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				ll.is_current = '1'
+			AND ll.current_step_key = 'qualityCheck'
+			AND ll.data_status = 'A'
+			AND la.data_status = 'A'
+			AND la.org_id = :orgId
+        ]]>
+    </sql>
+    
+    <!-- 3.待投资审核申请单数(执委会) -->
+	<sql id="queryForPendingCheckNum">
+        <![CDATA[
+            SELECT
+				IFNULL(COUNT(1),0) 'num'
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				ll.is_current = '1'
+			AND ll.current_step_key = 'investmentCheck'
+			AND ll.data_status = 'A'
+			AND la.data_status = 'A'
+        ]]>
+    </sql>
+    
+    <!-- 4.客户到期提醒 (客户经理) -->
+    
+    <!-- 4.开户基数(销售客服) -->
+	<sql id="queryCustAccountNumByOrgId">
+        <![CDATA[
+            SELECT 
+            	IFNULL(COUNT(1),0) 'num'
+            FROM 
+            	t_cust_account ca 
+            WHERE 
+            	ca.org_id = :orgId 
+            AND ca.data_status != 'D'
+			AND ca.lender_cust_code IS NOT NULL;
+        ]]>
+    </sql>
+    
+    <!-- 4.人员迁移数(执委会) -->
+    
+    
+    <!-- 5.投资总额(客户经理) -->
+	<sql id="queryForSumByCreateUser">
+        <![CDATA[
+			SELECT
+				IFNULL(SUM(la.lender_amount), 0) 'sum_lender_amount'
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				la.data_status = 'A'
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.current_step_key = 'success'
+			AND ll.current_action = 1
+			AND la.create_user = :createUser
+        ]]>
+    </sql>
+    
+    <!-- 5.投资总额(销售客服) -->
+	<sql id="queryForSumByOrgId">
+        <![CDATA[
+			SELECT
+				IFNULL(SUM(la.lender_amount), 0) 'sum_lender_amount'
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				la.data_status = 'A'
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.current_step_key = 'success'
+			AND ll.current_action = 1
+			AND la.org_id = :orgId
+        ]]>
+    </sql>
+    
+    <!-- 5.投资总额(执委会) -->
+	<sql id="queryForSum">
+        <![CDATA[
+			SELECT
+				IFNULL(SUM(la.lender_amount), 0) 'sum_lender_amount'
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				la.data_status = 'A'
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.current_step_key = 'success'
+			AND ll.current_action = 1
+        ]]>
+    </sql>
+    
+    <!-- 6.客户生日提醒(客户经理) -->
+    
+    <!-- 6.营业部业绩明细(销售客服) -->
+    
+</sqlMap>	

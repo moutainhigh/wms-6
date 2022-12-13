@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="productDetail">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			product_detail_id,
+            product_detail_name,
+            product_detail_key,
+            product_detail_level,
+            up_product_detail_id,
+            product_detail_desc,
+            product_detail_type,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+		FROM t_product_detail
+			WHERE 
+				product_detail_id = :id
+    	]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 	
+    		product_detail_id,
+            product_detail_name,
+            product_detail_key,
+            product_detail_level,
+            up_product_detail_id,
+            product_detail_desc,
+            product_detail_type,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+		FROM t_product_detail
+		]]>
+	</sql>    
+</sqlMap>	

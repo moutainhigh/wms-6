@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="interest">
+
+	<sql id="queryInterest">
+		<![CDATA[
+		SELECT
+			mbb.cust_name custName,
+			mbb.id_card idCard,
+			mbb.biz_code lenderCode,
+			p.product_name productName,
+			f.lender_income_amount incomeAmount,
+			cal.accountLevelName accountLevel,
+			ip.bill_day billDay,
+			f.report_day date
+		FROM
+			t_match_biz_base mbb
+		LEFT JOIN t_investment_pool ip ON mbb.match_biz_base_id = ip.match_biz_base_id
+		LEFT JOIN t_investment_fund f ON ip.investment_pool_id = f.investment_pool_id
+		LEFT JOIN t_product p ON p.product_id = mbb.biz_product_id
+		LEFT JOIN (
+			SELECT
+				mu_.match_cust_id_card idCard,
+				al_.account_level_name accountLevelName,
+				al_.service_rate_month serviceRate
+			FROM
+				t_account_level_log all_
+			LEFT JOIN t_account_level al_ ON all_.account_level_id = al_.account_level_id
+			LEFT JOIN t_match_user mu_ ON all_.cust_code = mu_.match_cust_code
+			LEFT JOIN (
+				SELECT
+					COUNT(ip_.investment_pool_id) invest_count,
+					ip_.match_user_id match_user_id
+				FROM
+					t_investment_pool ip_
+				WHERE
+					ip_.data_status IN ('O','S','P')
+				GROUP BY
+					ip_.match_user_id
+			) ip_e_ ON ip_e_.match_user_id = mu_.match_user_id
+			WHERE
+				all_.is_current = 1
+			AND ip_e_.invest_count > 0 
+		) cal on cal.idCard = mbb.id_card
+		WHERE
+			mbb.biz_product_id IN (12,34)
+		AND mbb.data_status NOT IN ('T', 'F', 'M')
+		AND mbb.biz_category = 2
+		AND f.lender_income_amount > 0
+		<#if reportDayTimeBegin ?exists && reportDayTimeBegin!="">
+			AND f.report_day = :reportDayTimeBegin
+		</#if>
+		<#if productId ?exists && productId!="">
+			AND mbb.biz_product_id = :productId
+		</#if>
+		<#if lenderCode ?exists && lenderCode!="">
+			AND mbb.biz_code = :lenderCode
+		</#if>	
+			ORDER BY f.report_day DESC
+    	]]>
+	</sql>
+</sqlMap>	

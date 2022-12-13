@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="productDetail">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			product_detail_id,
+            product_detail_name,
+            product_detail_key,
+            product_detail_level,
+            up_product_detail_id,
+            product_detail_desc,
+            product_detail_type,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+		FROM t_product_detail
+			WHERE 
+				product_detail_id = :id
+    	]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 	
+    		product_detail_id,
+            product_detail_name,
+            product_detail_key,
+            product_detail_level,
+            up_product_detail_id,
+            product_detail_desc,
+            product_detail_type,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+		FROM t_product_detail
+		]]>
+	</sql> 
+	<!-- 通过产品Id查询产品明细信息 -->
+	<sql id="queryProductDetailDtoByProductId">
+		<![CDATA[
+    	SELECT
+			pdr.product_id productId,
+			pdr.product_code productCode,
+			pdr.product_detail_id detailId,
+			pdr.product_detail_key detailKey,
+			pdr.product_detail_relation_val detailRelationVal,
+			pdr.product_detail_relation_index detailRelationIndex,
+			pd.product_detail_name detailName,
+			pd.product_detail_type detailType,
+			pd.product_detail_level detailLevel,
+			pd.product_detail_desc detailDesc
+		FROM
+			t_product_detail_relation pdr
+		LEFT JOIN t_product_detail pd ON pdr.product_detail_id = pd.product_detail_id
+		WHERE
+			pdr.product_id = :productId
+		AND pdr.data_status = 'A'
+		AND pd.data_status = 'A'
+		<#if flag?exists && flag=="A">
+		AND !(pdr.product_detail_relation_index = 1 and pdr.product_detail_key = 'period')
+		</#if> 
+		<#if flag?exists && flag=="S">
+		AND !(pdr.product_detail_relation_index != 1 and pdr.product_detail_key = 'period')
+		</#if> 
+		]]>
+	</sql>  
+	   
+	<!-- 通过产品Id查询产品明细信息 -->
+	<sql id="queryProDetailDtoByProIdAndDetailKey">
+		<![CDATA[
+    	SELECT
+			pdr.product_id productId,
+			pdr.product_code productCode,
+			pdr.product_detail_id detailId,
+			pdr.product_detail_key detailKey,
+			pdr.product_detail_relation_val detailRelationVal,
+			pdr.product_detail_relation_index detailRelationIndex,
+			pd.product_detail_name detailName,
+			pd.product_detail_type detailType,
+			pd.product_detail_level detailLevel,
+			pd.product_detail_desc detailDesc
+		FROM
+			t_product_detail_relation pdr
+		LEFT JOIN t_product_detail pd ON pdr.product_detail_id = pd.product_detail_id
+		WHERE
+			pdr.product_id = :productId
+		AND pdr.product_detail_key = :detailKey
+		AND pdr.data_status = 'A'
+		AND pd.data_status = 'A'
+		ORDER BY pdr.create_time DESC
+		]]>
+	</sql>       
+</sqlMap>	

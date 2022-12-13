@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchRuleGroupDetail">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryListByGroupId">
+		<![CDATA[
+		SELECT 
+			* 
+		FROM 
+			t_match_rule_group_detail 
+		WHERE 
+			1=1
+			<#if groupId?exists && groupId!="">
+				AND match_rule_group_id = :groupId
+			</#if>	
+		
+		ORDER BY 
+			detail_index 
+		ASC;	
+    	]]>
+	</sql>
+
+
+</sqlMap>	

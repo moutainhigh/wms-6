@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderQuery">
+
+	<sql id="queryByDueDate">
+		<![CDATA[
+			SELECT
+				la.lender_apply_id,
+				la.statement_date, 
+				ca.cust_name, 
+				la.form_status,
+				ca.id_type, 
+				ca.id_card, 
+				ca.mobile, 
+				la.product_id, 
+				la.lender_amount, 
+				cf.bank_category, 
+				cf.account_num, 
+				la.settlement_date, 
+				la.due_date, 
+				la.lender_code, 
+				la.org_id, 
+				la.update_time 
+			FROM
+				t_lender_apply la 
+			LEFT JOIN	t_cust_account ca ON la.cust_account_id = ca.cust_account_id 
+			LEFT JOIN	t_cust_finance cf ON la.lender_apply_id = cf.lender_apply_id 
+			WHERE	1=1 
+				AND		la.data_status = 'A' 
+				AND		cf.account_category = 2 
+				AND la.due_date IS NOT NULL 
+				AND la.form_status = 21
+				AND la.lender_code IS NOT NULL
+				AND la.due_date >= :dueDateBegin
+				AND la.due_date <= :dueDateEnd
+			<#if custName?exists && custName!=""> 
+				AND 	ca.cust_name = :custName 
+			</#if>	
+			<#if idCard?exists && idCard!=""> 
+				AND 	ca.id_card = :idCard 
+			</#if>
+			ORDER BY	la.update_time DESC
+		]]>
+	</sql>
+
+	<sql id="queryAmountsByFormStatus">
+		<![CDATA[
+			SELECT
+				SUM(la.lender_amount)
+			FROM
+				t_lender_apply la 
+			WHERE	1=1 
+				AND	la.data_status = 'A' 
+				AND la.due_date IS NOT NULL 
+				AND la.due_date >= :dueDateBegin
+				AND la.due_date <= :dueDateEnd
+			<#if custName?exists && custName!=""> 
+				AND 	ca.cust_name = :custName 
+			</#if>	
+			<#if idCard?exists && idCard!=""> 
+				AND 	ca.id_card = :idCard 
+			</#if>
+		]]>
+	</sql>
+	
+	 <sql id="query">
+    	<![CDATA[
+    	SELECT
+			cc.cust_name,
+			cc.cust_code,
+			cc.id_card,
+			cc.mobile,
+			cc.cust_category,
+			co.zip_code,
+			co.email,
+			co.province_region_code,
+			co.city_region_code,
+			co.district_region_code,
+			co.street_info,
+			cc.cust_source,
+			cp.profession,
+			ll.lender_code,
+			ll.contract_code,
+			ll.lender_cust_code,
+			ll.lender_apply_id,
+			ll.lender_amount,
+			ll.product_id,
+			ll.expect_lender_date_begin,
+			ll.expect_lender_date_end,
+			ll.statement_date,
+			ll.org_id,
+			ll.sign_Date,
+			ll.settlement_date,
+			ll.statement_date,
+			ll.create_user,
+			ll.create_time,
+			ll.update_time,
+			ll.update_user,
+			ll.data_status,
+			ll.parent_id
+		FROM
+			t_lender_apply ll
+		LEFT JOIN t_cust_account cc ON ll.cust_account_id = cc.cust_account_id
+		LEFT JOIN t_cust_comm co ON ll.cust_account_id = co.cust_account_id
+		LEFT JOIN t_cust_linkman cl ON ll.cust_account_id = cl.cust_account_id
+		LEFT JOIN t_cust_profession cp ON ll.cust_account_id = cp.cust_account_id
+		WHERE
+		 	1=1
+		<#if lenderCode?exists && lenderCode!=""> 
+			AND ll.lender_code = :lenderCode
+		</#if>
+		<#if applyId?exists && applyId!=""> 
+			AND ll.lender_apply_id = :applyId
+		</#if>			
+    	]]>
+    </sql>
+</sqlMap>	

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="account">
+
+	<sql id="queryParamPage">
+		<![CDATA[
+		SELECT DISTINCT
+			ca_.cust_name custName,
+			ca_.id_card idCard,
+			all_.account_current_amount currentAmount,
+			ip_e_.invest_count investNum,
+			al_.account_level_name accountLevelName,
+			al_.account_level_id accountLevelId,
+			alr.service_rate_month serviceRate,
+			mu_.match_user_id matchUserId
+		FROM
+			t_account_level_log all_
+		LEFT JOIN t_account_level al_ ON all_.account_level_id = al_.account_level_id
+		LEFT JOIN t_match_user mu_ ON all_.cust_code = mu_.match_cust_code
+		LEFT JOIN (
+			SELECT
+				COUNT(ip_.investment_pool_id) invest_count,
+				ip_.match_user_id match_user_id,
+				ip_.version_key
+			FROM
+				t_investment_pool ip_
+			WHERE
+				ip_.data_status IN ('O','S','P')
+			GROUP BY
+				ip_.match_user_id
+		) ip_e_ ON ip_e_.match_user_id = mu_.match_user_id
+		LEFT JOIN t_cust_account ca_ ON mu_.match_cust_code = ca_.lender_cust_code
+		LEFT JOIN t_account_level_rate alr
+		ON ip_e_.version_key = alr.vesion_key
+		AND al_.account_level_id = alr.account_level_id
+		WHERE
+			all_.is_current = 1
+		AND ip_e_.invest_count > 0
+		<#if custName?exists && custName!="">
+			AND ca_.cust_name = :custName
+		</#if>
+		<#if accountLevelId?exists && accountLevelId!="">
+			AND all_.account_level_id = :accountLevelId
+		</#if>
+    	]]>
+	</sql>
+
+	<sql id="queryCustUserId">
+		<![CDATA[
+		SELECT
+			mbb_.biz_code lenderCode,
+			ip_.product_id productId,
+			ip_.init_total_amount lenderAmount,
+			ip_.current_period currentPeriod,
+			ip_.bill_day billDay,
+			ip_.current_total_amount currentAmount,
+			ip_.interest_begin_time effectDate,
+			ip_.data_status dataStatus
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+			ip_.data_status IN ('S','O','P')
+		<#if custUserId?exists && custUserId!="">	
+			AND ip_.match_user_id = :custUserId
+		</#if>
+    	]]>
+	</sql>
+</sqlMap>	  		

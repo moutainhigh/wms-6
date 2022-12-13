@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="past">
+
+	<sql id="queryPastList">
+		<![CDATA[
+			SELECT
+				DISTINCT
+				mba.cust_name custName,
+				mba.id_card  idCard,
+				mba.biz_code lenderCode,
+				mba.biz_total_amount lenderAmount,
+				ip.current_undo_amount backMatchAmount,
+				ip.product_id productId,
+				ip.bill_day reportDay,
+				ip.interest_begin_time investDay,
+				ip.data_status,
+				ip.investment_pool_id poolId,
+				ip.current_period currentPeriod
+			FROM
+				t_match_biz_base mba
+			LEFT JOIN t_investment_pool ip on mba.match_biz_base_id = ip.match_biz_base_id
+			LEFT JOIN t_match_result mr on ip.investment_pool_id = mr.investment_pool_id
+			WHERE ip.data_status='S'
+			<#if createTime ?exists && createTime!="">
+				AND mr.create_time >= :createTime
+			</#if>
+			<#if reportDate ?exists && reportDate!="">
+				AND mr.report_date = :reportDate
+			</#if>
+			<#if lenderCode ?exists && lenderCode!="">
+				AND mba.biz_code = :lenderCode
+			</#if>
+			<#if idCard ?exists && idCard!="">
+				AND mba.id_card = :idCard
+			</#if>
+    	]]>
+	</sql>
+	
+	<sql id="queryCredit4List">
+		<![CDATA[
+		SELECT
+			sum(mr_.transfer_total_amount) backMatchAmount
+		FROM
+			t_match_result mr_
+		WHERE
+			1=1
+			AND mr_.data_status = 'A'
+		<#if poolId?exists && poolId!="">
+			AND mr_.investment_pool_id = :poolId
+		</#if>
+		<#if currentPeriod?exists && currentPeriod!="">	
+			AND mr_.current_period = :currentPeriod
+		</#if>
+		<#if createTimePre ?exists && createTimePre!="">
+			AND mr_.create_time >= :createTimePre
+		</#if>
+		]]>
+	</sql>
+	
+	<sql id="queryInvest">
+		<![CDATA[
+		SELECT
+			DISTINCT
+			ip_.investment_pool_id poolId,
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			mbb_.zip_code zipCode,
+			mbb_.cust_address custAddress,
+			mbb_.biz_code lenderCode,
+			ip_.product_id productId,
+			ip_.init_total_amount initTotalAmount,
+			ip_.init_match_time initMatchTime,
+			ip_.init_bill_date initBillDate,
+			ip_.bill_day billDay,
+			ip_.current_period currentPeriod,
+			mr_.report_date reportDay
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		LEFT JOIN t_match_result mr_ on ip_.investment_pool_id = mr_.investment_pool_id
+		WHERE
+			1=1
+			AND ip_.data_status='S'
+		<#if lenderCode?exists && lenderCode!="">
+			AND mbb_.biz_code = :lenderCode
+		</#if>
+		<#if createTimePre ?exists && createTimePre!="">
+			AND mr_.create_time >= :createTimePre
+		</#if>
+		<#if reportDayPre ?exists && reportDayPre!="">
+			AND mr_.report_date = :reportDayPre
+		</#if>
+		]]>
+	</sql>
+	
+	<sql id="queryCredit">
+		<![CDATA[
+		SELECT
+			mbb_c_.cust_name custName,
+			mbb_c_.id_card idCard,
+			mr_.transfer_total_amount transAmount,
+			mr_.pay_give_amount payAmount,
+			mbb_c_.biz_total_amount initTotalAmount,
+			mbb_c_.biz_attr attr,
+			cp_.init_bill_date repayDate,
+			cp_.init_period initPeriod,
+			cp_.remain_period remainPeriod,
+			cp_.rate_year rateYear,
+			mr_.transfer_ea_capital_amount transCapital,
+			mr_.transfer_ea_interest_amount transInterest
+		FROM
+			t_match_result mr_
+		LEFT JOIN t_creditor_pool cp_ ON mr_.creditor_pool_id = cp_.creditor_pool_id
+		LEFT JOIN t_match_biz_base mbb_c_ ON cp_.match_biz_base_id = mbb_c_.match_biz_base_id
+		WHERE
+			1=1
+			AND mr_.data_status = 'A'
+		<#if poolId?exists && poolId!="">	
+			AND mr_.investment_pool_id = :poolId
+		</#if>
+		<#if currentPeriod?exists && currentPeriod!="">	
+			AND mr_.current_period = :currentPeriod
+		</#if>
+		<#if createTimePre ?exists && createTimePre!="">
+			AND mr_.create_time >= :createTimePre
+		</#if>
+		]]>
+	</sql>
+</sqlMap>

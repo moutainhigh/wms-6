@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custProfession">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			cust_profession_id,
+			cust_account_id,
+			profession,
+			industry,
+			company_name,
+			post,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_profession
+			WHERE 
+				cust_profession_id = :id
+		]]>
+	</sql>    
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 	
+    		cust_profession_id,
+			cust_account_id,
+			profession,
+			industry,
+			company_name,
+			post,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_profession
+		]]>
+	</sql>  
+	
+<!-- 根据客户编号查询 -->
+	<sql id="queryByAccountId">
+        <![CDATA[
+       SELECT
+		    cust_profession_id,
+		    cust_account_id,
+		    profession,
+		    industry,
+		    company_name,
+		    post,
+		    create_user,
+		    create_time,
+		    update_user,
+		    update_time,
+		    data_status
+		FROM
+		    t_cust_profession
+		WHERE
+		    cust_account_id = :accountId
+        ]]>
+    </sql>    
+</sqlMap>	

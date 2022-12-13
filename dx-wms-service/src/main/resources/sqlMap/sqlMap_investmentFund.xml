@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="investmentFund">
+
+	<sql id="queryByParam">
+		<![CDATA[
+		SELECT
+			if_.*,
+			mr_.total_amount totalAmount,
+			mr_.total_capital totalCapital,
+			mr_.total_interest totalInterest,
+			mr_.total_ea totalEa,
+			ip_.interest_begin_time interestBeginTime
+		FROM 
+			t_investment_fund if_
+		LEFT JOIN t_investment_pool ip_
+		ON if_.investment_pool_id = ip_.investment_pool_id		
+		LEFT JOIN (
+			SELECT
+				SUM(transfer_ea_amount) total_ea,
+				SUM(transfer_total_amount) total_amount,
+				SUM(transfer_ea_capital_amount) total_capital,
+				SUM(
+					transfer_ea_interest_amount
+				) total_interest,
+				investment_pool_id,
+				current_period
+			FROM
+				t_match_result
+			WHERE
+				data_status = 'A'
+			GROUP BY
+				investment_pool_id,
+				current_period
+		) mr_ ON if_.investment_pool_id = mr_.investment_pool_id
+		AND 
+			if_.current_period = mr_.current_period
+		WHERE
+			if_.data_status = 'A'
+		<#if poolId?exists && poolId!="">
+			AND	if_.investment_pool_id = :poolId
+		</#if> 
+		<#if isCurrent?exists && isCurrent!="">	
+			AND if_.is_current = :isCurrent	
+		</#if> 
+		<#if currentPeriod?exists && currentPeriod!="">	
+			AND if_.current_period = :currentPeriod	
+		</#if> 
+    	]]>
+	</sql>
+	<sql id="queryAll">
+        <![CDATA[
+        SELECT
+			if_.*,
+			ip_.init_bill_date
+		FROM
+			t_investment_fund if_
+		LEFT JOIN t_investment_pool ip_ ON if_.investment_pool_id = ip_.investment_pool_id
+		WHERE
+			if_.data_status = 'A'
+        ]]>
+	</sql>
+	<sql id="queryById">
+        <![CDATA[
+        SELECT
+			if_.*
+		FROM
+			t_investment_fund if_
+		WHERE
+			if_.investment_fund_id = :id	
+        ]]>
+	</sql>
+	<sql id="queryCurrentError">
+        <![CDATA[
+        SELECT
+			if_.*,
+			mr_.total_amount totalAmount,
+			mr_.total_capital totalCapital,
+			mr_.total_interest totalInterest,
+			mr_.total_ea totalEa,
+			ip_.interest_begin_time interestBeginTime
+		FROM
+			t_investment_fund if_
+		LEFT JOIN t_investment_pool ip_
+		ON if_.investment_pool_id = ip_.investment_pool_id	
+		LEFT JOIN (
+			SELECT
+				SUM(transfer_ea_amount) total_ea,
+				SUM(transfer_total_amount) total_amount,
+				SUM(transfer_ea_capital_amount) total_capital,
+				SUM(
+					transfer_ea_interest_amount
+				) total_interest,
+				investment_pool_id,
+				current_period
+			FROM
+				t_match_result
+			WHERE
+				data_status = 'A'
+			GROUP BY
+				investment_pool_id,
+				current_period
+		) mr_ ON if_.investment_pool_id = mr_.investment_pool_id
+		AND mr_.current_period = if_.current_period
+		WHERE
+			if_.is_current = 1
+		AND (
+			if_.next_princal_total_amount != mr_.total_capital
+			OR if_.next_interest_total_amount != mr_.total_interest
+			OR if_.next_repayment_total_amount != mr_.total_ea
+		);
+        ]]>
+	</sql>
+	<sql id="queryReportNull">
+        <![CDATA[
+        SELECT
+			if_.*, ip_.init_bill_date initBillDate
+		FROM
+			t_investment_fund if_
+		LEFT JOIN t_investment_pool ip_ ON if_.investment_pool_id = ip_.investment_pool_id
+		WHERE
+			if_.report_day IS NULL
+		AND
+			ip_.init_bill_date IS NOT NULL;
+         ]]>
+	</sql>
+</sqlMap>	

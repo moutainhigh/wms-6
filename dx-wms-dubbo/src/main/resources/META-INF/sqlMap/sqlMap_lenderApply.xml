@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderApply">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			la_.*
+		FROM t_lender_apply la_
+		WHERE 
+			la_.lender_apply_id = :id
+		]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		la_.*
+    	FROM 
+    		t_lender_apply la_
+    ]]>
+	</sql>
+
+	<sql id="syncProduct">
+		<![CDATA[
+    	UPDATE 
+    		t_lender_apply la_
+		SET 
+			la_.product_id = :productId
+		WHERE
+			la_.lender_code = :lenderCode
+    ]]>
+	</sql>
+
+	<!-- 通过理财客户Id查询出借申请单列表 -->
+	<sql id="queryByCustAccountId">
+		<![CDATA[
+			SELECT	
+				la_.*
+			FROM 
+				t_lender_apply la_
+			WHERE 
+				la_.cust_account_id = :custAccontId
+		]]>
+	</sql>
+	<!-- 通过理财客户编号查询出借申请单列表 -->
+	<sql id="queryByLenderCustCode">
+		<![CDATA[
+			SELECT
+				la.*,
+				ca.cust_account_id,
+				ca.lender_cust_code
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+			WHERE
+				ca.lender_cust_code = :lenderCustCode
+			AND la.lender_code IS NOT NULL
+	]]>
+	</sql>
+
+	<sql id="queryByCustom">
+		<![CDATA[
+		SELECT
+			la_.*		
+		FROM t_lender_apply la_
+		WHERE 
+			1=1
+		<#if code?exists>	
+			AND	la_.lender_code = :code
+		</#if>
+		]]>
+	</sql>
+
+	<sql id="queryLendersInfo">
+	    <![CDATA[
+	       SELECT
+				la.lender_apply_id,
+				la.lender_code lenderCode,
+				ca.cust_name custName,
+				ca.id_card idCard,
+				la.lender_amount lenderAmount,
+				la.product_id productId,
+				ll.current_step_key currentStepKey,
+				ll.current_action currentAction,
+				ll.last_step_key lastStepKey
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca ON ca.cust_account_id = la.cust_account_id
+			LEFT JOIN t_lender_apply_log ll ON ll.lender_apply_id = la.lender_apply_id
+			WHERE
+				ll.is_current = '1'
+			AND ll.data_status = 'A'
+			AND (
+				ca.data_status != 'D' && ca.data_status IS NOT NULL
+			)
+			AND la.data_status = 'A'
+			<#if lenderCode?exists && lenderCode != "">
+		    	AND la.lender_code = :lenderCode
+		    </#if>
+		    <#if custName?exists && custName != "">
+		    	AND ca.cust_name = :custName
+		    </#if>
+		    <#if idCard?exists && idCard != "">
+		    	AND ca.id_card = :idCard
+		    </#if>
+		    <#if productId?exists && productId != "">
+		    	AND la.product_id = :productId
+		    </#if>
+		    <#if currentStepKey?exists && currentStepKey=="14">
+            	AND ll.current_step_key = 'match' 
+            	AND ll.current_action IS NULL
+            	AND ll.last_step_key  = 'investmentCheck'
+            <#elseif currentStepKey?exists && currentStepKey=="15">
+             	AND ll.current_step_key = 'creditorConfirm' 
+             	AND ll.current_action IS NULL
+             	AND ll.last_step_key  = 'match'
+            <#elseif currentStepKey?exists && currentStepKey=="16">
+             	AND ll.current_step_key = 'match' 
+             	AND ll.current_action IS NULL
+             	AND ll.last_step_key  = 'creditorConfirm'
+            <#elseif currentStepKey?exists && currentStepKey=="17">
+             	AND ll.current_step_key = 'contributiveConfirm' 
+             	AND ll.current_action IS NULL
+            <#elseif currentStepKey?exists && currentStepKey=="18">
+	            AND ll.current_step_key = 'creditorConfirm' 
+	            AND ll.last_action = '2'
+	            AND ll.last_step_key  = 'contributiveConfirm'
+            <#elseif currentStepKey?exists && currentStepKey=="19">
+	            AND ll.current_step_key = 'investmentConfirm' 
+	            AND ll.current_action IS NULL
+            <#elseif currentStepKey?exists && currentStepKey=="20">
+             	AND (ll.current_step_key = 'fail' or ll.current_step_key = 'giveUp')
+            <#elseif currentStepKey?exists && currentStepKey=="21">
+             	AND ll.current_step_key = 'success' 
+            <#else> 
+		    	AND ll.current_step_key IN ('match','creditorConfirm','contributiveConfirm','investmentConfirm','success','fail','giveUp')
+		    </#if>
+    	]]>
+	</sql>
+	<sql id="query">
+	   	 <![CDATA[
+		SELECT
+			la_.sign_date signDate,
+			la_.lender_apply_id lenderApplyId,
+			ca_.cust_name custName,
+			la_.lender_code lenderCode,
+			ca_.sex sex,
+			ca_.id_card idCard,
+			la_.product_id productId,
+			la_.lender_amount lenderAmount,
+			ca_.cust_category custCategory,
+			la_.expect_lender_date_begin lenderDateBegin,
+			la_.expect_lender_date_end lenderDateEnd,
+			la_.org_id orgId,
+			la_.team_id teamId,
+			la_.create_user managerId,
+			la_.pay_way_id payWayId,
+			cf_p_.account_name payAccountName,
+			cf_p_.bank_category payBank,
+			cf_p_.sub_bank paySubBank,
+			cf_p_.account_num payAccountNum,
+			cf_b_.account_name backAccountName,
+			cf_b_.bank_category backBank,
+			cf_b_.sub_bank backSubBank,
+			cf_b_.account_num backAccountNum,
+			ca_.msg_way msgWay,
+			ca_.mobile mobile,
+			la_.contract_code contractCode,
+			cf_b_.city_region_code cityCode,
+			cf_b_.province_region_code provinceRegionCode
+		FROM
+			t_lender_apply la_
+		LEFT JOIN t_cust_account ca_ ON ca_.cust_account_id = la_.cust_account_id
+		LEFT JOIN t_cust_finance cf_p_ ON la_.lender_apply_id = cf_p_.lender_apply_id
+		AND cf_p_.account_category = 1
+		LEFT JOIN t_cust_finance cf_b_ ON la_.lender_apply_id = cf_b_.lender_apply_id
+		AND cf_b_.account_category = 2
+		WHERE
+			la_.lender_code = :lenderCode
+	    ]]>
+	</sql>
+	<sql id="queryBackBank">
+	   	 <![CDATA[
+			SELECT
+				cf_.account_name,
+				cf_.account_num,
+				cf_.bank_category,
+				cf_.sub_bank,
+				la_.pay_way_id
+			FROM
+				t_lender_apply p_la_
+			LEFT JOIN t_lender_apply la_ ON p_la_.parent_id = la_.lender_apply_id
+			LEFT JOIN t_cust_finance cf_ ON la_.lender_apply_id = cf_.lender_apply_id
+			AND cf_.account_category = 1
+			WHERE
+				p_la_.lender_apply_id = :lenderApplyId
+		]]>
+	</sql>
+	<sql id="getLenderApplyByCode">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			due_date,
+			proc_ins_id,
+			parent_id,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			lender_code = :lenderCode
+		]]>
+	</sql>
+	
+	<sql id="syncStatus">
+	    <![CDATA[
+	       	UPDATE 
+	       		t_lender_apply
+			SET 
+			<#if formStatus?exists && formStatus != "">
+		    	form_status = :formStatus
+		    </#if>
+			<#if dueStatus?exists && dueStatus != "">
+		    	due_status = :dueStatus
+		    </#if>	
+			WHERE
+				lender_apply_id =:applyId
+    	]]>
+	</sql>
+	
+	<sql id="queryContinue">
+	    <![CDATA[
+    	SELECT 
+    		lao.lender_apply_id lenderApplyId,
+    		lao.lender_code lenderCode,
+    		lao.cust_account_id custAccountId,
+    		lao.lender_cust_code lenderCustCode,
+    		lao.contract_code contractCode,
+    		lao.product_id productId,
+    		lao.expect_lender_date_begin expectLenderDateBegin,
+    		lao.expect_lender_date_end expectLenderDateEnd,
+    		lao.pay_way_id payWayId,
+    		lao.lender_amount lenderAmount,
+    		lao.cust_finance_id custFinanceId,
+    		lao.sign_date signDate,
+    		lao.create_user createUser,
+    		lao.create_time createTime,
+    		lao.update_user updateUser,
+    		lao.update_time updateTime,
+    		lao.data_status dataStatus,
+    		lao.org_id orgId,
+    		lao.team_id teamId,
+    		lao.settlement_date settlementDate,
+    		lao.statement_date statementDate,
+    		lao.match_date matchDate,
+    		lao.sign_mobile signMobile,
+    		lao.form_status formStatus,
+    		lao.parent_id parentId,
+    		lao.due_date dueDate,
+    		lao.proc_ins_id procInsId,
+    		lao.recovery recovery,
+    		lao.due_status dueStatus
+    	FROM 
+    		t_lender_apply lan 
+		LEFT JOIN t_lender_apply lao ON lan.parent_id = lao.lender_apply_id
+		WHERE 
+			1=1
+		<#if lenderCode?exists && lenderCode != "">
+			AND lan.lender_code = :lenderCode
+		</#if>
+    	]]>
+	</sql>
+</sqlMap>	  

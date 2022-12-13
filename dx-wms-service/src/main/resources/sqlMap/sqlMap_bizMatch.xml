@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="bizMatch">
+	<sql id="queryAdd">
+		<![CDATA[
+		SELECT
+			ip_.investment_pool_id poolId,
+			mbb_.biz_code lenderCode,
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			ip_.product_id productId,
+			ip_.init_total_amount lenderAmount,
+			ip_.current_undo_amount matchAmount,
+			mbb_.biz_date_begin expectLenderDateBegin,
+			mbb_.biz_date_end expectLenderDateEnd,
+			mbb_.create_time enterDate
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN t_match_biz_base mbb_ ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		AND mbb_.biz_category = 2
+		WHERE 
+			ip_.data_status = 'A'
+		<#if lenderCode?exists && lenderCode!="">	
+			AND mbb_.biz_code = :lenderCode
+		</#if>    
+		<#if productId?exists && productId!="">
+			AND ip_.product_id = :productId
+		</#if> 
+		<#if enterDateBegin?exists && enterDateBegin!="">
+			AND mbb_.create_time >= :enterDateBegin
+		</#if>    
+		<#if enterDateEnd?exists && enterDateEnd!="">
+			AND mbb_.create_time <= :enterDateEnd
+		</#if>
+		ORDER BY mbb_.create_time DESC
+    	]]>
+	</sql>
+</sqlMap>	    	

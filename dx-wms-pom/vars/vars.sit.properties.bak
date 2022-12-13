@@ -1,0 +1,34 @@
+url=jdbc:mysql://10.80.63.121:3306/wms?useUnicode=true&amp;characterEncoding=utf8&amp;generateSimpleParameterMetadata=true
+username=wms
+password=ccs123456
+initialSize=10
+maxIdle=20
+minIdle=10
+maxActive=50
+
+wms.web.ipAddress=http://sitwms.daxincf.cn
+root=http://sitwms.daxincf.cn
+resRoot=http://sitwms.daxincf.cn/assets
+wms.web.temppath = /var/tempfile/
+wms.file.ipAddress = http://sitwms.daxincf.cn/file/wmsres
+wms.web.destPath = /var/www/wmsres
+wms.web.rarpwd = 123
+
+wms.sso.key.tokendurationMinutes=43200
+wms.sso.key.password=123456
+wms.sso.key.alias=tomcat
+wms.sso.key.keyStorePath=/home/application/ssokey/tomcat.keystore
+wms.sso.key.tokenKeyPath=/home/application/ssokey/sso.key
+
+wms.cache.redis.maxIdle=300
+wms.cache.redis.minIdle=100
+wms.cache.redis.ip=10.80.30.16 
+wms.cache.redis.port=6379
+wms.cache.redis.password=ZXCasdQWE123
+wms.cache.redis.timeOut=300
+wms.cache.redis.dbIndex=1
+
+wms.dubbo.register.bus=zookeeper://10.80.30.18:2181?backup=10.80.30.19:2181,10.80.30.20:2181
+
+
+gagu.ucm.hosts=10.80.30.18:2181,10.80.30.19:2181,10.80.30.20:2181

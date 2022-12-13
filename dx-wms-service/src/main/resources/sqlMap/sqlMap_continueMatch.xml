@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="continueMatch">
+
+	<sql id="queryInvest">
+		<![CDATA[
+		SELECT
+			ip_.investment_pool_id poolId,
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			mbb_.biz_code lenderCode,
+			ip_.init_total_amount initAmount,
+			ip_.current_undo_amount undoAmount,
+			ip_.product_id productId,
+			ip_.create_time date,
+			mbb_.cust_category category,
+			ip_.match_user_id userId
+		FROM
+			t_investment_pool ip_
+		LEFT JOIN
+			t_match_biz_base mbb_
+		ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+			ip_.data_status = 'G'
+		AND mbb_.data_status = 'C'	
+		<#if createDateBegin?exists && createDateBegin!="">	
+			AND ip_.create_time >= :createDateBegin
+		</#if>	
+		<#if createDateEnd?exists && createDateEnd!="">
+			AND ip_.create_time <= :createDateEnd
+		</#if>
+		<#if filterAmountFrom?exists && filterAmountFrom!="">	
+			AND ip_.init_total_amount >= :filterAmountFrom
+		</#if>
+		<#if filterAmountTo?exists && filterAmountTo!="">	
+			AND ip_.init_total_amount <= :filterAmountTo
+		</#if>
+		<#if productId?exists && productId!="-1">	
+			AND ip_.product_id = :productId
+		</#if>	
+		<#if lenderCode?exists && lenderCode!="">	
+			AND mbb_.biz_code = :lenderCode
+		</#if>
+		<#if category?exists && category!="-1">	
+			AND mbb_.cust_category = :category
+		</#if>
+		<#if poolId?exists && poolId!="">	
+			AND ip_.investment_pool_id = :poolId
+		</#if>
+		<#if poolIds?exists && (poolIds?size>0) >
+			AND ip_.investment_pool_id NOT IN (:poolIds)
+		</#if>
+		ORDER BY
+			ip_.init_total_amount DESC
+		]]>
+	</sql>
+</sqlMap>	

@@ -1,0 +1,7 @@
+.select-modal {
+	left: 31%;
+	width: 80%;
+}
+.modal.fade.in {
+	top: 5%;
+}

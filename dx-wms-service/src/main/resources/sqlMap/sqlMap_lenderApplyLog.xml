@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderApplyLog">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryByApply">
+		<![CDATA[
+		SELECT
+			ll.lender_apply_log_id,
+			ll.lender_apply_id,
+			ll.from_user,
+			ll.to_user,
+			ll.is_current,
+			ll.current_step,
+			ll.current_step_key,
+			ll.current_action,
+			ll.create_time,
+			ll.create_user,
+			ll.update_time,
+			ll.update_user,
+			ll.approve_comment,
+			ll.data_status,
+			ll.approve_comment,
+			ll.last_action,
+			ll.last_step_key
+		FROM
+			t_lender_apply_log ll
+		WHERE
+			ll.data_status = 'A'
+		AND ll.lender_apply_id = :applyId
+		ORDER BY
+			ll.create_time ASC
+		]]>
+	</sql>
+
+	<sql id="updateLenderApplyLog">
+		<![CDATA[
+			UPDATE t_lender_apply_log ll
+			SET ll.is_current = '1',
+			 ll.update_user = :updateUser
+			WHERE
+				ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.lender_apply_id = :lenderApplyId;
+		]]>
+	</sql>
+
+	<sql id="queryLenderApplyLogByLenderApplyId">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :lenderApplyId
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			ORDER BY ll.create_time DESC
+		]]>
+	</sql>
+
+
+	<!-- 获取某理财申请的最早的质检日志 -->
+	<sql id="queryCustManageByLenderApplyId">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :lenderApplyId
+			AND ll.data_status = 'A'
+			AND ll.current_step_key = 'qualityCheck'
+			ORDER BY
+				ll.create_time ASC
+			LIMIT 0,1
+		]]>
+	</sql>
+
+	<sql id="queryCurrentByApplyId">
+        <![CDATA[
+            SELECT
+			    lender_apply_log_id,
+				lender_apply_id,
+				from_user,
+				to_user,
+				is_current,
+				current_step,
+				current_step_key,
+				current_action,
+				create_time,
+				create_user,
+				update_time,
+				update_user,
+				approve_comment,
+				data_status,
+				approve_comment,
+				last_action,
+				last_step_key
+			FROM
+			    t_lender_apply_log
+			WHERE
+			    is_current = 1
+			AND data_status = 'A'
+			AND lender_apply_id = :applyId
+        ]]>
+	</sql>
+
+
+
+	<sql id="queryCreateTime">
+		<![CDATA[
+			SELECT
+				lal.lender_apply_log_id,
+				min_len.lender_apply_id lenderApplyId,
+				min_len.create_time createTime
+			FROM
+				t_lender_apply_log lal
+			LEFT JOIN (
+				SELECT
+					MIN(la.create_time) create_time,
+					la.lender_apply_id
+				FROM
+					t_lender_apply_log la
+				WHERE
+					current_step_key = 'creditorConfirm'
+				GROUP BY
+					lender_apply_id
+			) min_len ON min_len.lender_apply_id = lal.lender_apply_id
+			WHERE
+				lal.is_current = 1
+			AND (
+				lal.current_step_key = 'creditorConfirm'
+				OR lal.current_step_key = 'contributiveConfirm'
+			)
+		]]>
+	</sql>
+
+	<sql id="queryByHasAccount">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			LEFT JOIN t_lender_apply la ON la.lender_apply_id = ll.lender_apply_id
+			WHERE
+				ll.current_step_key = 'investmentConfirm'
+			AND ll.is_current = '1'
+			AND ll.data_status = 'A'
+			<#if hasAccount?exists>
+				AND la.settlement_date IS NOT NULL
+			<#else>
+				AND la.settlement_date IS NULL
+			</#if> 
+			
+		]]>
+	</sql>
+
+	<!-- 理财日志转移 -->
+	<!-- update_user = :userId, -->
+	<sql id="updateCreateUser">
+	    <![CDATA[
+	       UPDATE t_lender_apply_log
+		   SET from_user = :createUser,
+		   update_time = update_time
+		   WHERE
+			   lender_apply_id = :lenderApplyId
+		   AND data_status = 'A'
+		   ORDER BY create_time LIMIT 1
+    	]]>
+	</sql>
+
+	<sql id="queryByStepAndApply">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :applyId
+			AND ll.data_status = 'A'
+			AND ll.current_step_key = :step
+			ORDER BY
+				ll.lender_apply_log_id DESC
+		]]>
+	</sql>
+</sqlMap>	  

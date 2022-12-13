@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="accountLevel">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			cust_account_level_id,
+			cust_account_id,
+			lender_cust_code,
+			account_level_id,
+			account_current_amount,
+			flow_category,
+			flow_amount,
+			is_current,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_account_level
+			WHERE 
+				cust_account_level_id = :id
+    	]]>
+	</sql>	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 	
+    		cust_account_level_id,
+			cust_account_id,
+			lender_cust_code,
+			account_level_id,
+			account_current_amount,
+			flow_category,
+			flow_amount,
+			is_current,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_account_level
+				cust_account_level_id = :id
+    	]]>
+	</sql>
+<!-- 根据出借code查询资金等级 -->
+	<sql id="queryForCustAccountLevelByLenderCode">
+		<![CDATA[
+    	SELECT
+		  cal.cust_account_level_id,
+			cal.cust_account_id,
+			cal.lender_cust_code,
+			cal.account_level_id,
+			cal.account_current_amount,
+			cal.flow_category,
+			cal.flow_amount,
+			cal.is_current,
+			cal.create_user,
+			cal.create_time,
+			cal.update_user,
+			cal.update_time,
+			cal.data_status,
+			la.lender_code
+			
+		FROM t_cust_account_level cal
+    LEFT JOIN t_lender_apply la ON la.cust_account_id = cal.cust_account_id
+		WHERE
+				1=1	
+		]]>
+	</sql>	
+</sqlMap>	 		

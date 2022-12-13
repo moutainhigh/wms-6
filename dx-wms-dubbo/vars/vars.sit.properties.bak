@@ -1,0 +1,29 @@
+url=jdbc:mysql://10.165.98.14:3306/wms?useUnicode=true&amp;characterEncoding=utf8&amp;generateSimpleParameterMetadata=true
+username=ccs
+password=ZXCasdQWE123
+
+initialSize=20
+maxIdle=10
+minIdle=10
+maxActive=50
+
+wms.dubbo.register.bus=zookeeper://121.40.150.185:2181?backup=120.26.40.238:2181,121.40.56.140:2181
+
+wms.cache.redis.maxIdle=500
+wms.cache.redis.minIdle=50
+wms.cache.redis.ip=121.40.102.99
+wms.cache.redis.port=6379
+wms.cache.redis.password=ZXCasdQWE123
+wms.cache.redis.timeOut=3000
+wms.cache.redis.dbIndex=1
+
+wms.web.ipAddress=http://121.43.110.10:8080/wms
+root=http://121.43.110.10:8080/wms
+resRoot=http://121.43.110.10:8080/wms/assets
+wms.web.temppath = /var/tempfile/
+wms.file.ipAddress = http://121.40.91.126/file/wmsres
+wms.web.destPath = /var/www/wmsres
+wms.web.rarpwd = 123
+
+
+gagu.ucm.hosts=121.40.56.140:2181,120.26.40.238:2181,121.40.150.185:2181

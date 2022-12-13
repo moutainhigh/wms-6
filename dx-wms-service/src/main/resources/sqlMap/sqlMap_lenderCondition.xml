@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderCondition">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			lender_condition_id,
+			lender_apply_id,
+			lender_condition_val,
+			lender_condition_remark,
+			lender_condition_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_lender_condition
+			WHERE 
+			lender_condition_id = :id
+		]]>
+	</sql>
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		lender_condition_id,
+			lender_apply_id,
+			lender_condition_val,
+			lender_condition_remark,
+			lender_condition_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_lender_condition
+		]]>
+	</sql>
+	<!-- 根据出借编号 查询出借特殊情况全表 -->
+	<sql id="queryByApply">
+		<![CDATA[
+    	SELECT
+			lender_condition_id,
+			lender_apply_id,
+			lender_condition_val,
+			lender_condition_remark,
+			lender_condition_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM
+			t_lender_condition
+		WHERE
+			data_status = 'A'
+		AND lender_apply_id = :applyId
+	 ]]>
+	</sql>
+	
+	<!-- 根据出借编号修改状态-->
+	<sql id="setDataStatusByLenderApplyId">
+		<![CDATA[
+    	UPDATE t_lender_condition
+		SET data_status = :dataStatus
+		WHERE
+			lender_apply_id = :lenderApplyId
+		<#if lenderConditionCategory?exists && lenderConditionCategory!="">
+   			AND lender_condition_category = :lenderConditionCategory
+   		</#if> 		
+    	]]>
+	</sql>
+</sqlMap>

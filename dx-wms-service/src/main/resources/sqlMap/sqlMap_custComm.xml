@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custComm">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			cust_comm_id,
+			cust_account_id,
+			province_region_code,
+			city_region_code,
+			district_region_code,
+			street_info,
+			zip_code,
+			area_code,
+			tel_num,
+			email,
+			wechat,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_comm
+			WHERE 
+				cust_comm_id = :id
+		]]>
+	</sql> 
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		cust_comm_id,
+			cust_account_id,
+			province_region_code,
+			city_region_code,
+			district_region_code,
+			street_info,
+			zip_code,
+			area_code,
+			tel_num,
+			email,
+			wechat,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_comm
+		]]>
+	</sql> 
+
+<!-- 根据客户编号查询 -->
+	<sql id="queryByAccountId">
+        <![CDATA[
+	        SELECT
+				    cust_comm_id,
+				    cust_account_id,
+				    province_region_code,
+				    city_region_code,
+				    district_region_code,
+				    street_info,
+				    zip_code,
+				    area_code,
+				    tel_num,
+				    email,
+				    wechat,
+				    create_user,
+				    create_time,
+				    update_user,
+				    update_time,
+				    data_status
+				FROM
+				    t_cust_comm
+	            WHERE 
+	                cust_account_id = :accountId
+        ]]>
+    </sql> 
+</sqlMap>	
+		

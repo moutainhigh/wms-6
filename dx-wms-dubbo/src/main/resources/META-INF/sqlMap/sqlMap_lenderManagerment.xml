@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderManagerment">
+	<sql id="queryQualityCheckLenderApplyLogByLenderApplyId">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :lenderApplyId
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.current_step_key = :currentStepKey
+			ORDER BY
+				ll.create_time DESC
+		]]>
+	</sql>
+
+	<!-- 获取某理财申请的最早的质检日志 -->
+	<sql id="queryCustManageByLenderApplyId">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :lenderApplyId
+			AND ll.data_status = 'A'
+			AND ll.current_step_key = 'qualityCheck'
+			ORDER BY
+				ll.create_time ASC
+			LIMIT 0,1
+		]]>
+	</sql>
+
+	<sql id="getCurrentStepKeyByLenderApplyId">
+        <![CDATA[
+            SELECT
+			    lender_apply_log_id,
+				lender_apply_id,
+				from_user,
+				to_user,
+				is_current,
+				current_step,
+				current_step_key,
+				current_action,
+				create_time,
+				create_user,
+				update_time,
+				update_user,
+				approve_comment,
+				data_status,
+				approve_comment,
+				last_action,
+				last_step_key
+			FROM
+			    t_lender_apply_log
+			WHERE
+			    is_current = 1
+			AND data_status = 'A'
+			AND lender_apply_id = :lenderApplyId;
+        ]]>
+	</sql>
+
+	<!-- 查询流水号对应调用日志 -->
+	<sql id="queryByInvokeLogCode">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			invoke_result,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+			WHERE 
+				invoke_log_code = :invokeLogCode
+		]]>
+	</sql>
+
+	<!-- 查询流水号对应调用日志 -->
+	<sql id="queryByLenderApplyId">
+		<![CDATA[
+    	SELECT
+			invoke_log_id,
+			invoke_log_code,
+			invoke_comment,
+			lender_apply_id,
+			lender_code,
+			invoke_result,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_invoke_log
+			WHERE 
+				lender_apply_id = :lenderApplyId
+		]]>
+	</sql>
+
+	<!-- 根据调用日志CODE修改调用日志记录的状态 -->
+	<sql id="setInvokeLogStatusByCode">
+	    <![CDATA[
+	       	UPDATE t_invoke_log
+				SET data_status = :dataStatus
+			<#if approve?exists && approve!="">
+    			, invoke_comment = :approve
+    		</#if> 
+			WHERE
+				lender_code = :lenderCode
+				AND data_status = 'A'
+    	]]>
+	</sql>
+
+	<!-- 根据客户账户编号更改客户状态 -->
+	<sql id="changeStatusByCustAccountId">
+	    <![CDATA[
+	       UPDATE t_cust_account
+	       SET data_status = :dataStatus
+	       WHERE cust_account_id =  :custAccountId
+    	]]>
+	</sql>
+	<!-- 根据客户编号更改客户状态 -->
+	<sql id="changeStatusByCustId">
+	    <![CDATA[
+	       UPDATE t_cust_base 
+	       SET data_status = :dataStatus
+	       WHERE cust_id =  :custId
+    	]]>
+	</sql>
+
+	<!-- 根据custCode查询 -->
+	<sql id="queryByCustCode">
+	    <![CDATA[
+	        SELECT
+	            cust_id,
+	            cust_code,
+	            cust_name,
+	            id_type,
+	            id_card,
+	            mobile,
+	            sex,
+	            cust_source,
+	            cust_source_other,
+	            create_user,
+	            create_time,
+	            update_user,
+	            update_time,
+	            data_status
+	        FROM
+	            t_cust_base
+	        WHERE 
+	            cust_code = :custCode
+       ]]>
+	</sql>
+
+	<sql id="queryCustAccountById">
+	<![CDATA[
+		SELECT
+			cust_account_id,
+			lender_cust_code,
+			cust_code,
+			cust_name,
+			cust_name_spell,
+			sex,
+			nationality,
+			common_language,
+			marital_status,
+			id_type,
+			id_card,
+			birth_date,
+			mobile,
+			education,
+			msg_way,
+			cust_source,
+			cust_source_other,
+			open_date,
+			cust_category,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_account
+			WHERE 
+				cust_account_id = :custAccountId
+		]]>
+	</sql>
+
+	<sql id="queryLenderApplyById">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			parent_id,
+			data_status		
+		FROM t_lender_apply
+		WHERE 
+			lender_apply_id = :lenderApplyId
+		]]>
+	</sql>
+
+	<!-- 通过理财客户Id查询出借申请单列表 -->
+	<sql id="queryByCustAccountId">
+		<![CDATA[
+			SELECT	
+				lender_apply_id,
+				lender_code,
+				contract_code,
+				cust_account_id,
+				lender_cust_code,
+				product_id,
+				expect_lender_date_begin,
+				expect_lender_date_end,
+				pay_way_id,
+				lender_amount,
+				cust_finance_id,
+				sign_date,
+				team_id,
+				org_id,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				parent_id,
+				data_status		
+			FROM t_lender_apply
+				WHERE 
+				cust_account_id = :custAccountId
+		]]>
+	</sql>
+
+	<!-- 根据调用日志CODE修改调用日志记录的状态 -->
+	<sql id="setSettlementDateById">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+				SET settlement_date = :settlementDate
+			<#if updateUser?exists && updateUser!="">
+   				 ,update_user = :updateUser
+   			</#if>
+			WHERE
+				lender_apply_id = :lenderApplyId
+    	]]>
+	</sql>
+	<!-- 修改等待投资确认日志操作人 -->
+	<sql id="updateLenderLogUpdateUser">
+	    <![CDATA[
+	       	UPDATE t_lender_apply_log
+				SET update_user = :updateUser,
+				update_time = :updateTime
+			WHERE
+				is_current = 1
+				AND current_step_key = 'investmentConfirm'
+				AND lender_apply_id = :lenderApplyId
+    	]]>
+	</sql>
+
+	<!-- 修改等待投资确认日志操作人 -->
+	<sql id="updateLendersDueDate">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET due_date = :dueDate
+			WHERE
+				lender_code = :lenderCode
+    	]]>
+	</sql>
+	<!-- 修改等待投资确认日志操作人 -->
+	<sql id="updateLenderApplyFormStatus">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET form_status = :formStatus
+			WHERE
+				lender_apply_id =:lenderApplyId
+    	]]>
+	</sql>
+
+	<sql id="getLenderApplyById">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			due_date,
+			parent_id,
+			proc_ins_id,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			lender_apply_id = :lenderApplyId
+		]]>
+	</sql>
+
+	<sql id="getLenderApplyByCode">
+		<![CDATA[
+		SELECT
+			lender_apply_id,
+			lender_code,
+			contract_code,
+			cust_account_id,
+			lender_cust_code,
+			product_id,
+			expect_lender_date_begin,
+			expect_lender_date_end,
+			pay_way_id,
+			lender_amount,
+			cust_finance_id,
+			sign_date,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			settlement_date,
+			sign_mobile,
+			statement_date,
+			match_date,
+			form_status,
+			due_date,
+			proc_ins_id,
+			parent_id,
+			recovery
+		FROM t_lender_apply
+		WHERE 
+			lender_code = :lenderCode
+		]]>
+	</sql>
+
+	<sql id="updateLenderApplyDataStatus">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET data_status = :dataStatus
+			WHERE
+				lender_apply_id =:lenderApplyId
+    	]]>
+	</sql>
+
+	<sql id="setLenderStatementDate">
+        <![CDATA[
+            UPDATE t_lender_apply
+			SET statement_date = :statementDate,
+			match_date = :matchDate,
+			form_status = :formStatus
+			WHERE
+			    lender_code = :lenderCode
+      	]]>
+	</sql>
+
+	<sql id="updateDueApplyStatus">
+	    <![CDATA[
+	       	UPDATE t_lender_apply
+			SET due_status = :dueStatus
+			WHERE
+				lender_apply_id =:id
+    	]]>
+	</sql>
+</sqlMap>	  		

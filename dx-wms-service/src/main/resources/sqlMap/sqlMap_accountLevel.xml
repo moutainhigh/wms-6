@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="accountLevel">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			*
+		FROM 
+			t_account_level
+		WHERE 
+			account_level_id = :id
+		AND
+			data_status != 'D'		
+    	]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		*
+		FROM 
+			t_account_level
+		WHERE
+			data_status != 'D'	
+		]]>
+	</sql>
+	<sql id="queryByDB">
+		<![CDATA[
+    	SELECT 
+    		*
+		FROM 
+			t_account_level
+		WHERE
+			1 = 1
+		AND
+			data_status != 'D' 	
+		<#if name?exists && name!="">
+			AND account_level_name = :name
+		</#if>		
+		<#if rate?exists && rate!="">
+			AND service_rate_month = :rate
+		</#if>
+		]]>
+	</sql>
+</sqlMap>	  		

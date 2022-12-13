@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="creditView">
+
+	<sql id="statQuery">
+		<![CDATA[
+		SELECT
+			COUNT(creditor_pool_id) num,
+			SUM(init_total_amount) amount,
+			DATE_FORMAT(create_time, '%Y-%m-%d') date
+		FROM
+			t_creditor_pool
+		WHERE
+			1 = 1
+		<#if createDateBegin?exists && createDateBegin!="">
+			AND create_time >= :createDateBegin
+		</#if>
+		<#if createDateEnd?exists && createDateEnd!="">
+			AND create_time <= :createDateEnd
+		</#if>
+		GROUP BY
+			DATE_FORMAT(create_time, '%Y-%m-%d')
+		ORDER BY 
+			DATE_FORMAT(create_time, '%Y-%m-%d') DESC	
+		]]>
+	</sql>
+	<sql id="poolQuery">
+		<![CDATA[
+		SELECT
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			cp_.init_total_amount initTotalAmount,
+			cp_.init_bill_date repayBeginDate,
+			cp_.init_period initPeriod,
+			cp_.remain_period remainPeriod,
+			cp_.rate_year rateYear,
+			cp_.product_id productId,
+			cp_.init_ea_bill_amount repayAmount,
+			cp_.rate_month rateMonth,
+			cp_.match_day repayDay,
+			cf_.current_period repayPeriod,
+			cp_.current_total_amount currentTotalAmount,
+			cp_.current_done_amount currentDoneAmount,
+			cp_.current_undo_amount currentUndoAmount,
+			cf_.last_total_amount lastTotalAmount,
+			cf_.last_total_done_amount lastDoneAmount,
+			cf_.last_total_undo_amount lastUndoAmount,
+			cf_.last_repayment_interest_amount lastInterest,
+			cf_.last_repayment_princal_amount lastCapital,
+			cp_.creditor_pool_id poolId,
+			mbb_.biz_contract_code contractNo,
+			cp_.create_time date
+		FROM
+			t_creditor_pool cp_
+		LEFT JOIN t_match_biz_base mbb_ ON cp_.match_biz_base_id = mbb_.match_biz_base_id
+		LEFT JOIN t_creditor_fund cf_ ON cp_.creditor_pool_id = cf_.creditor_pool_id
+		AND cf_.is_current = 1
+		WHERE
+			cp_.data_status NOT IN ('D','E')
+		<#if repayDay?exists && repayDay!="-1">
+			AND cp_.match_day = :repayDay
+		</#if>	
+		<#if createDateBegin?exists && createDateBegin!="">
+			AND cp_.create_time >= :createDateBegin
+		</#if>
+		<#if createDateEnd?exists && createDateEnd!="">
+			AND cp_.create_time <= :createDateEnd
+		</#if>
+		<#if contractNo?exists && contractNo!="">
+			AND mbb_.biz_contract_code = :contractNo
+		</#if>
+		<#if idCard?exists && idCard!="">
+			AND mbb_.id_card = :idCard
+		</#if>
+		<#if custName?exists && custName!="">
+			AND mbb_.cust_name = :custName
+		</#if>
+		ORDER BY
+			cp_.create_time DESC
+		]]>
+	</sql>
+	<sql id="matchQuery">
+		<![CDATA[
+		SELECT
+			mr_.match_result_id matchId,
+			mbb_c_.cust_name custName,
+			mbb_c_.id_card idCard,
+			mr_.transfer_total_amount transAmount,
+			mr_.pay_give_amount payAmount,
+			mbb_c_.biz_attr bizAttr,
+			cp_.init_bill_date repayBeginDate,
+			cp_.init_period initPeriod,
+			cp_.remain_period remainPeriod,
+			cp_.rate_year rateYear,
+			cp_.creditor_pool_id poolId
+		FROM
+			t_match_result mr_
+		LEFT JOIN t_investment_pool ip_ ON mr_.investment_pool_id = ip_.investment_pool_id
+		LEFT JOIN t_match_biz_base mbb_i_ ON ip_.match_biz_base_id = mbb_i_.match_biz_base_id 
+		AND mbb_i_.biz_category = 2
+		LEFT JOIN t_creditor_pool cp_ ON mr_.creditor_pool_id = cp_.creditor_pool_id
+		LEFT JOIN t_match_biz_base mbb_c_ ON cp_.match_biz_base_id = mbb_c_.match_biz_base_id
+		WHERE
+			mr_.data_status = 'A'
+		<#if lenderCode?exists && lenderCode!="">
+			AND mbb_i_.biz_code = :lenderCode 
+		</#if>	
+		<#if currentPeriod?exists && currentPeriod!="">
+			AND mr_.current_period >= :currentPeriod 
+		</#if>
+		ORDER BY
+			mr_.create_time DESC
+		]]>
+	</sql>
+	<sql id="expQuery">
+	<![CDATA[
+		SELECT
+			mbb_.cust_name custName,
+			mbb_.id_card idCard,
+			cp_.init_total_amount initTotalAmount,
+			cp_.init_bill_date repayBeginDate,
+			cp_.init_period initPeriod,
+			cp_.remain_period remainPeriod,
+			cp_.rate_year rateYear,
+			cp_.product_id productId,
+			cp_.init_ea_bill_amount repayAmount,
+			cp_.rate_month rateMonth,
+			cp_.match_day repayDay,
+			cp_.current_total_amount currentTotalAmount,
+			cp_.current_done_amount currentDoneAmount,
+			cp_.current_undo_amount currentUndoAmount,
+			cp_.creditor_pool_id poolId,
+			mbb_.biz_contract_code contractNo,
+			mr_.num num
+		FROM
+			t_match_biz_base mbb_
+		LEFT JOIN t_creditor_pool cp_ ON mbb_.match_biz_base_id = cp_.match_biz_base_id
+		LEFT JOIN (
+			SELECT
+				creditor_pool_id,
+				report_date,
+				COUNT(match_result_id) num
+			FROM
+				t_match_result
+			WHERE
+				data_status = 'A'
+			GROUP BY
+				creditor_pool_id,
+				report_date
+		) mr_ ON cp_.creditor_pool_id = mr_.creditor_pool_id
+		AND mr_.report_date = DATE_ADD(
+			cp_.init_bill_date,
+			INTERVAL cp_.init_period - remain_period MONTH
+		)
+		WHERE
+			mbb_.data_status = 'E'
+		AND mbb_.data_index = 1
+		AND mbb_.biz_category = 1
+		<#if port?exists && port!="99">
+			AND cp_.match_day = :port 
+		</#if>
+	]]>
+	</sql>
+	<sql id="currentQuery">
+	<![CDATA[
+		SELECT
+			match_day repayDay,
+			COUNT(creditor_pool_id) num,
+			SUM(current_total_amount) amount,
+			SUM(current_undo_amount) remainAmout,
+			SUM(current_done_amount) matchAmount
+		FROM
+			t_creditor_pool
+		WHERE
+			data_status NOT IN ('D','E')
+		GROUP BY
+			match_day	
+	]]>
+	</sql>
+	<sql id="detailQuery">
+	<![CDATA[
+		SELECT
+			COUNT(creditor_pool_id) num,
+			SUM(init_total_amount) amount,
+			match_day repayDay
+		FROM
+			t_creditor_pool
+		WHERE
+			1 = 1 
+		<#if createDateBegin?exists && createDateBegin!="">
+			AND create_time >= :createDateBegin 
+		</#if>
+		<#if createDateEnd?exists && createDateEnd!="">
+			AND create_time <= :createDateEnd 
+		</#if>
+		GROUP BY
+			match_day	
+	]]>
+	</sql>
+</sqlMap>	

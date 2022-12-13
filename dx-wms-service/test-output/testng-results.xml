@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="1" passed="1">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="31327" started-at="2016-12-26T15:17:25Z" finished-at="2016-12-26T15:17:56Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="31327" started-at="2016-12-26T15:17:25Z" finished-at="2016-12-26T15:17:56Z">
+      <class name="com.dx.op.test.service.CacheTests">
+        <test-method status="PASS" signature="springTestContextBeforeTestClass()[pri:0, instance:com.dx.op.test.service.CacheTests@62503aec]" name="springTestContextBeforeTestClass" is-config="true" duration-ms="14" started-at="2016-12-26T15:17:25Z" finished-at="2016-12-26T15:17:25Z">
+        </test-method> <!-- springTestContextBeforeTestClass -->
+        <test-method status="PASS" signature="springTestContextPrepareTestInstance()[pri:0, instance:com.dx.op.test.service.CacheTests@62503aec]" name="springTestContextPrepareTestInstance" is-config="true" duration-ms="19038" started-at="2016-12-26T15:17:25Z" depends-on-methods="org.springframework.test.context.testng.AbstractTestNGSpringContextTests.springTestContextBeforeTestClass" finished-at="2016-12-26T15:17:44Z">
+        </test-method> <!-- springTestContextPrepareTestInstance -->
+        <test-method status="PASS" signature="query()[pri:0, instance:com.dx.op.test.service.CacheTests@62503aec]" name="query" duration-ms="12246" started-at="2016-12-26T15:17:44Z" finished-at="2016-12-26T15:17:56Z">
+        </test-method> <!-- query -->
+        <test-method status="PASS" signature="springTestContextBeforeTestMethod(java.lang.reflect.Method)[pri:0, instance:com.dx.op.test.service.CacheTests@62503aec]" name="springTestContextBeforeTestMethod" is-config="true" duration-ms="0" started-at="2016-12-26T15:17:44Z" finished-at="2016-12-26T15:17:44Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void com.dx.op.test.service.CacheTests.query() throws java.io.IOException]]>
+              </value>
+            </param>
+          </params>
+        </test-method> <!-- springTestContextBeforeTestMethod -->
+        <test-method status="PASS" signature="springTestContextAfterTestMethod(java.lang.reflect.Method)[pri:0, instance:com.dx.op.test.service.CacheTests@62503aec]" name="springTestContextAfterTestMethod" is-config="true" duration-ms="3" started-at="2016-12-26T15:17:56Z" finished-at="2016-12-26T15:17:56Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void com.dx.op.test.service.CacheTests.query() throws java.io.IOException]]>
+              </value>
+            </param>
+          </params>
+        </test-method> <!-- springTestContextAfterTestMethod -->
+        <test-method status="PASS" signature="springTestContextAfterTestClass()[pri:0, instance:com.dx.op.test.service.CacheTests@62503aec]" name="springTestContextAfterTestClass" is-config="true" duration-ms="1" started-at="2016-12-26T15:17:56Z" finished-at="2016-12-26T15:17:56Z">
+        </test-method> <!-- springTestContextAfterTestClass -->
+      </class> <!-- com.dx.op.test.service.CacheTests -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

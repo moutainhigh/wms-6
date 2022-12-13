@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="versionNotice">
+    
+    <sql id="queryVersion">
+        <![CDATA[
+    	    SELECT version_id
+    	    FROM t_version
+    	]]>
+    </sql>
+    
+    <sql id="queryVersionNotice">
+        <![CDATA[
+    	    SELECT user_id, version_id 
+			FROM t_version_notice 
+			WHERE user_id = :userId
+    	]]>
+    </sql>
+    
+    <sql id="addVersionNotice">
+        <![CDATA[
+    	    INSERT INTO t_version_notice (
+    	        user_id,
+    	        version_id
+    	    )
+			VALUES (
+				:userId,
+				:versionId
+				)
+    	]]>
+    </sql>
+    
+    <sql id="updateVersionNotice">
+        <![CDATA[
+    	    UPDATE t_version_notice
+			SET
+				version_id = :versionId
+			WHERE
+			    user_id = :userId
+    	]]>
+    </sql>
+    
+</sqlMap>

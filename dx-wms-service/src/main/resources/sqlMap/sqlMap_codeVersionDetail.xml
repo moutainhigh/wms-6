@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="codeVersionDetail">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+    	    SELECT 
+    	    	code_version_detail_id,
+				code_version_id,
+				code_rule_detail_id,
+				code_version_detail_index,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status
+    	    FROM t_code_version_detail
+			WHERE 
+				code_version_detail_id = :id
+    	]]>
+	</sql>
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    		SELECT
+    			code_version_detail_id,
+				code_version_id,
+				code_rule_detail_id,
+				code_version_detail_index,
+				create_user,
+				create_time,
+				update_user,
+				update_time,
+				data_status
+    		FROM t_code_version_detail
+    	]]>
+	</sql>    
+</sqlMap>	    	

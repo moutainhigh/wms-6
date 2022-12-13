@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchView">
+	<sql id="queryByPage">
+		<![CDATA[
+			SELECT
+				mbb.biz_code lenderCode,
+				mbb.cust_name custName,
+				ip.init_total_amount initTotalAmount,
+				ip.current_total_amount currentTotalAmount,
+				ip.match_time matchDate,
+				ip.data_status dataStatus,
+				ip.investment_pool_id poolId,
+				ip.bill_day billDay,
+				mbb.match_biz_base_id bizId,
+				ip.product_id productId,
+				ip.current_period currentPeriod,
+				in_.totalIncome totalIncome,
+				ip.interest_begin_time interestBeginTime,
+				ip.init_match_time initMatchTime,
+				ip.trans_time transTime,
+				ip.trans_total_amount transTotalAmount,
+				ip.trans_creditor_amount transCreditorAmount
+			FROM
+				t_investment_pool ip
+			LEFT JOIN t_match_biz_base mbb ON ip.match_biz_base_id = mbb.match_biz_base_id
+			LEFT JOIN (
+				SELECT
+					mr.investment_pool_id,
+					SUM(
+						mr.transfer_ea_interest_amount
+					) totalIncome,
+					mr.current_period
+				FROM
+					t_match_result mr
+				GROUP BY
+					mr.investment_pool_id,
+					mr.current_period
+			) in_ ON ip.investment_pool_id = in_.investment_pool_id
+			WHERE
+				1 = 1
+			AND 
+				ip.current_period = in_.current_period
+			AND 
+				ip.data_status IN ('S', 'P', 'M')
+			<#if custName?exists && custName!="">
+				AND mbb.cust_name = :custName
+			</#if>
+			<#if productId?exists && productId!="">
+				AND ip.product_id = :productId
+			</#if>	
+			<#if lenderCode?exists && lenderCode!="">
+				AND mbb.biz_code = :lenderCode
+			</#if>
+			<#if matchDateBegin?exists && matchDateBegin!="">
+				AND ip.match_time >= :matchDateBegin
+			</#if>
+			<#if matchDateEnd?exists && matchDateEnd!="">
+				AND ip.match_time <= :matchDateEnd
+			</#if>
+			<#if initMatchDateBegin?exists && initMatchDateBegin!="">
+				AND ip.init_match_time >= :initMatchDateBegin
+			</#if>
+			<#if initMatchDateEnd?exists && initMatchDateEnd!="">
+				AND ip.init_match_time <= :initMatchDateEnd
+			</#if>
+			<#if transDateBegin?exists && transDateBegin!="">
+				AND ip.trans_time >= :transDateBegin
+			</#if>
+			<#if transDateEnd?exists && transDateEnd!="">
+				AND ip.trans_time <= :transDateEnd
+			</#if>
+			<#if billDay?exists && billDay!="">
+				AND ip.bill_day = :billDay
+			</#if>
+			ORDER BY ip.create_time DESC
+		]]>
+	</sql>
+	<sql id="export">
+		<![CDATA[
+			SELECT
+				mbb.cust_name custName,
+				mbb.id_card idCard,
+				ip.product_id productId,
+				ip.init_period initPeriod,
+				ip.init_total_amount amount,
+				mbb.mobile mobile,
+				DATE_FORMAT(ip.init_match_time, '%Y-%m-%d') payDate,
+				mbba_view.base_account_category payway,
+				mbba_view.base_account_bank bank,
+				mbba_view.base_account_bank_sub subbank,
+				mbba_view.base_account account
+			FROM
+				t_investment_pool ip
+			LEFT JOIN t_match_biz_base mbb 
+			ON 
+				ip.match_biz_base_id = mbb.match_biz_base_id
+			LEFT JOIN (
+				SELECT
+					mbba.match_biz_base_id,
+					mbba.base_account_category,
+					mbba.base_account_bank,
+					mbba.base_account_bank_sub,
+					mbba.base_account
+				FROM
+					t_match_biz_base_account mbba
+				WHERE
+					mbba.base_account_category IN (1,3,4)
+			) mbba_view 
+			ON 
+				ip.match_biz_base_id = mbba_view.match_biz_base_id
+			WHERE
+				ip.data_status = 'M'
+			AND ip.current_period = 1
+			<#if lenderCode?exists && lenderCode!="">
+				AND mbb.biz_code = :lenderCode
+			</#if>
+			<#if matchDateBegin?exists && matchDateBegin!="">
+				AND ip.match_time >= :matchDateBegin
+			</#if>
+			<#if matchDateEnd?exists && matchDateEnd!="">
+				AND ip.match_time <= :matchDateEnd
+			</#if>
+			<#if billDay?exists && billDay!="">
+				AND ip.bill_day = :billDay
+			</#if>
+			ORDER BY
+				ip.interest_begin_time ASC
+		]]>
+	</sql>
+</sqlMap>	    	

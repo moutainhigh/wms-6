@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchRuleGroup">
+	<!-- 根据主键查询 -->
+	<sql id="queryArray">
+		<![CDATA[
+		SELECT 
+			* 
+		FROM 
+			t_match_rule_group 
+		WHERE 
+			1=1
+			<#if ruleKey?exists && ruleKey!="">
+				AND match_rule_key = :ruleKey
+			</#if>	
+			<#if ruleCategory?exists && ruleCategory!="">
+				AND match_rule_category_id = :ruleCategory
+			</#if>	
+			<#if groupId?exists && groupId!="">
+				AND match_rule_group_mapping_id = :groupId
+			</#if>
+			ORDER BY
+				group_index 
+			ASC 
+    	]]>
+	</sql>
+	<sql id="query">
+		<![CDATA[
+		SELECT 
+			* 
+		FROM 
+			t_match_rule_group 
+		WHERE 
+			1=1
+			<#if key?exists && key!="">
+				AND match_rule_key = :key
+			</#if>	
+			<#if category?exists && category!="">
+				AND match_rule_category_id = :category
+			</#if>	
+			<#if groupId?exists && groupId!="">
+				AND match_rule_group_mapping_id = :groupId
+			</#if>
+			ORDER BY
+				group_index 
+			ASC 
+    	]]>
+	</sql>
+</sqlMap>	

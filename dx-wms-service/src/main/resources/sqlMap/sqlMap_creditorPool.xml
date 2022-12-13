@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="creditorPool">
+
+	<sql id="queryById">
+        <![CDATA[
+            SELECT
+                cp_.*,
+                DATE_ADD(
+					cp_.init_bill_date,
+					INTERVAL cp_.init_period - remain_period MONTH
+				) currentReportDate
+            FROM
+                t_creditor_pool cp_
+            WHERE
+                cp_.creditor_pool_id = :id
+            AND 
+            	cp_.data_status != 'D'    
+        ]]>
+	</sql>
+
+	<sql id="query">
+        <![CDATA[
+            SELECT
+                cp_.*,
+                DATE_ADD(
+					cp_.init_bill_date,
+					INTERVAL cp_.init_period - remain_period MONTH
+				) currentReportDate
+            FROM
+                t_creditor_pool cp_
+            WHERE
+            	cp_.data_status != 'D'
+            <#if baseId?exists && baseId!="">
+                AND cp_.match_biz_base_id = :baseId
+            </#if> 
+        ]]>
+	</sql>
+
+	<sql id="getBatchUpdateCreditorPool">
+        <![CDATA[
+            SELECT
+				cp_.*,
+                DATE_ADD(
+					cp_.init_bill_date,
+					INTERVAL cp_.init_period - remain_period MONTH
+				) currentReportDate
+			FROM
+				t_creditor_pool cp_
+			WHERE
+				cp_.data_status != 'D'
+			AND DATE_ADD(
+				cp_.init_bill_date,
+				INTERVAL cp_.init_period MONTH
+			) > DATE_FORMAT(SYSDATE(), "Y%-M%-D%")
+			AND DATE_FORMAT(SYSDATE(), "Y%-M%-D%") >= DATE_FORMAT(
+				cp_.init_bill_date,
+				"Y%-M%-D%"
+			)
+        ]]>
+	</sql>
+
+	<sql id="queryArray">
+        <![CDATA[
+            SELECT
+                cp_.*,
+                DATE_ADD(
+					cp_.init_bill_date,
+					INTERVAL cp_.init_period - remain_period MONTH
+				) currentReportDate
+            FROM
+                t_creditor_pool cp_
+            WHERE
+               1=1
+               AND cp_.remain_period > 0
+            <#if port?exists && port!="99">
+            	AND cp_.match_day = :port
+            </#if>   
+            <#if ids?exists && (ids?size>0)>
+            	AND cp_.creditor_pool_id IN (:ids)
+            	AND cp_.data_status != 'D'
+            </#if>  
+            <#if status?exists && (status?size>0)> 
+            	AND cp_.data_status IN (:status) 
+            </#if> 	   
+        ]]>
+	</sql>
+
+	<sql id="queryAll">
+        <![CDATA[
+            SELECT
+            	cp_.*,
+                DATE_ADD(
+					cp_.init_bill_date,
+					INTERVAL cp_.init_period - remain_period MONTH
+				) currentReportDate
+            FROM
+               	t_creditor_pool cp_
+            WHERE
+               	cp_.data_status != 'D'
+        ]]>
+	</sql>
+</sqlMap>

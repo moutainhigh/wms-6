@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custAccount">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+	<![CDATA[
+		SELECT
+			cust_account_id,
+			lender_cust_code,
+			cust_code,
+			cust_name,
+			cust_name_spell,
+			sex,
+			nationality,
+			common_language,
+			marital_status,
+			id_type,
+			id_card,
+			birth_date,
+			mobile,
+			education,
+			msg_way,
+			cust_source,
+			cust_source_other,
+			open_date,
+			cust_category,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			account_time
+		FROM t_cust_account
+			WHERE 
+				cust_account_id = :id
+		]]>
+	</sql>
+
+	<sql id="queryAll">
+	<![CDATA[
+		SELECT
+			cust_account_id,
+			lender_cust_code,
+			cust_code,
+			cust_name,
+			cust_name_spell,
+			sex,
+			nationality,
+			common_language,
+			marital_status,
+			id_type,
+			id_card,
+			birth_date,
+			mobile,
+			education,
+			msg_way,
+			cust_source,
+			cust_source_other,
+			open_date,
+			cust_category,
+			team_id,
+			org_id,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status,
+			ca.account_time
+		FROM t_cust_account
+		]]>
+	</sql>
+	
+	<!-- 查询某门店当天开户列表 -->
+	<sql id="queryByOrgIdAndToday">
+	<![CDATA[
+		SELECT 
+			ca.cust_account_id,
+			ca.lender_cust_code,
+			ca.cust_code,
+			ca.cust_name,
+			ca.cust_name_spell,
+			ca.sex,
+			ca.nationality,
+			ca.common_language,
+			ca.marital_status,
+			ca.id_type,
+			ca.id_card,
+			ca.birth_date,
+			ca.mobile,
+			ca.education,
+			ca.msg_way,
+			ca.cust_source,
+			ca.cust_source_other,
+			ca.open_date,
+			ca.cust_category,
+			ca.team_id,
+			ca.org_id,
+			ca.create_user,
+			ca.create_time,
+			ca.update_user,
+			ca.update_time,
+			ca.data_status,
+			ca.account_time
+		FROM
+			t_cust_account ca
+		WHERE
+			ca.lender_cust_code like CONCAT (:code,'%')
+		AND ca.account_time >= :startTime
+		AND ca.account_time <= :endTime
+		AND ca.lender_cust_code IS NOT NULL
+		]]>
+	</sql>
+	
+	<!-- 查询某门店当天开户列表 -->
+	<sql id="queryByLenderCustCode">
+	<![CDATA[
+		SELECT 
+			ca.cust_account_id,
+			ca.lender_cust_code,
+			ca.cust_code,
+			ca.cust_name,
+			ca.cust_name_spell,
+			ca.sex,
+			ca.nationality,
+			ca.common_language,
+			ca.marital_status,
+			ca.id_type,
+			ca.id_card,
+			ca.birth_date,
+			ca.mobile,
+			ca.education,
+			ca.msg_way,
+			ca.cust_source,
+			ca.cust_source_other,
+			ca.open_date,
+			ca.cust_category,
+			ca.team_id,
+			ca.org_id,
+			ca.create_user,
+			ca.create_time,
+			ca.update_user,
+			ca.update_time,
+			ca.data_status,
+			ca.account_time
+		FROM
+			t_cust_account ca
+		WHERE
+			ca.lender_cust_code = :lenderCustCode
+		]]>
+	</sql>
+</sqlMap>	

@@ -1,0 +1,63 @@
+.h70 {
+	height: 70px !important;
+}
+.h50 {
+	height: 50px !important;
+}
+.h40 {
+	height: 40px !important;
+}
+.ml1 {
+	margin-left: 5%;
+}
+.ml160 {
+	margin-left: 160px !important;
+}
+.txt-center {
+	text-align: center !important;
+}
+.txt-left {
+	text-align: left !important;
+}
+.txt-right {
+	text-align: right !important;
+}
+.top {
+	height: 20px;
+}
+.top10 {
+	height: 10px;
+}
+.bottom {
+	margin-bottom: 0px !important;
+	margin-top: 0px !important;
+	padding: 15px !important;
+}
+.w100 {
+	width: 100% !important
+}
+
+.w140 {
+    width: 140px !important;
+}
+.h350-y {
+	max-height: 350px;
+    overflow-y: auto;
+}
+
+.h550-y {
+	max-height: 550px;
+    overflow-y: auto;
+}
+.h250-y {
+	max-height: 250px;
+    overflow-y: auto;
+}
+。over{
+	overflow:auto;
+}
+
+.over-200{
+	overflow: auto;
+	height: 200px;
+}

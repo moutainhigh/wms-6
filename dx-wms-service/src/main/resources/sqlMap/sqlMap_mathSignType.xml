@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="mathSignType">
+
+	<sql id="getBySignKey">
+		<![CDATA[
+		SELECT
+			mst.*
+		FROM
+			t_math_sign_type mst
+		LEFT JOIN 
+			t_math_sign ms 
+		ON 
+			mst.math_sign_type_id = ms.math_sign_type_id
+		WHERE 
+			1=1
+			<#if groupId?exists && groupId!="">
+				AND ms.math_sign_key = :signKey
+			</#if>	
+    	]]>
+	</sql>
+
+
+</sqlMap>	

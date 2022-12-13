@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="matchRuleDetail">
+
+    <!-- 根据主键ID查询 -->>
+    <sql id="queryById">
+        <![CDATA[
+            SELECT
+               *
+            FROM
+                t_match_rule_detail
+            WHERE
+                match_rule_detail_id = :id
+        ]]>
+    </sql>
+    
+</sqlMap>

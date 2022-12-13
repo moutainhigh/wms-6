@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custFinance">
+
+	<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			cust_finance_id,
+			cust_account_id,
+			lender_apply_id,
+			account_name,
+			bank_category,
+			sub_bank,
+			account_num,
+			account_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_finance
+			WHERE 
+				cust_finance_id = :id
+		]]>
+	</sql>
+
+	<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    		cust_finance_id,
+			cust_account_id,
+			lender_apply_id,
+			account_name,
+			bank_category,
+			sub_bank,
+			account_num,
+			account_category,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_cust_finance
+	]]>
+	</sql>
+
+	<!-- 根据客户编号查询 -->
+	<sql id="queryByCustAccountId">
+        <![CDATA[
+        SELECT
+            cust_finance_id,
+            cust_account_id,
+            lender_apply_id,
+            account_name,
+            bank_category,
+            sub_bank,
+            account_num,
+            account_category,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+        FROM 
+        	t_cust_finance
+       	WHERE 
+            cust_account_id = :custAccountId
+            <#if accountCategory?exists && accountCategory!="">
+           		AND account_category = :accountCategory
+            </#if>
+        ]]>
+	</sql>
+
+	<!-- 根据客户编号查询 -->
+	<sql id="getCustFinancesByCustAccountId">
+        <![CDATA[
+        SELECT
+            cust_finance_id,
+            cust_account_id,
+            lender_apply_id,
+            account_name,
+            bank_category,
+            sub_bank,
+            account_num,
+            account_category,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+        FROM t_cust_finance
+            WHERE 
+                cust_account_id = :custAccountId
+            AND data_status = 'A'
+			AND (account_category = 1 or account_category = 2)
+        ]]>
+	</sql>
+
+	<!-- 根据客户编号查询 -->
+	<sql id="queryByApply">
+        <![CDATA[
+        SELECT
+            cust_finance_id,
+            cust_account_id,
+            lender_apply_id,
+            account_name,
+            bank_category,
+            sub_bank,
+            province_region_code,
+            city_region_code,
+            account_num,
+            account_category,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+        FROM 
+        	t_cust_finance
+        WHERE 
+            lender_apply_id = :applyId
+        AND 
+        	data_status = 'A'
+        AND 
+        	(account_category = 1 OR account_category = 2)
+        ]]>
+	</sql>
+	<!-- 根据客户编号更新户名和更新者 -->
+	<sql id="updateAccountNameByCustAccountId">
+    	<![CDATA[
+    		UPDATE t_cust_finance
+    		SET account_name = :accountName,
+    			update_user = :updateUser
+    		WHERE 
+    			data_status = 'A'
+    			AND cust_account_id =:custAccountId
+    	]]>
+	</sql>
+</sqlMap>		

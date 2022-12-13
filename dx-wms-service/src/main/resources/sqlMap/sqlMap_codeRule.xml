@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="codeRule">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			code_rule_id,
+			code_rule_name,
+			code_rule_key,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_code_rule
+			WHERE 
+				code_rulet_id = :id
+    	]]>
+	</sql>
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT 
+    	 	code_rule_id,
+			code_rule_name,
+			code_rule_key,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status	    
+    	FROM t_blacklist
+    	]]>
+	</sql>    
+</sqlMap>	    	

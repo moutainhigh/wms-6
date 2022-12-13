@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchBizBase">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELECT
+			mbb_.*
+		FROM
+			t_match_biz_base mbb_
+		WHERE 
+			mbb_.match_biz_base_id = :id
+    	]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT
+			mbb_.*
+		FROM
+		t_match_biz_base mbb_
+		]]>
+	</sql>	
+	<!-- 通过业务单Code获取匹配业务数据列表-->
+	<sql id="queryByBizCode">
+		<![CDATA[
+    	SELECT
+			mbb_.*
+		FROM
+		t_match_biz_base mbb_
+		WHERE
+			mbb_.biz_code = :bizCode
+		AND
+			mbb_.data_status != 'D'
+		]]>
+	</sql>	
+	
+	<!-- 通过业务Id,业务类型 查找匹配业务基础信息-->
+	<sql id="queryByBizId">
+		<![CDATA[
+    	SELECT
+			mbb_.*
+		FROM
+		t_match_biz_base mbb_
+		WHERE
+			mbb_.biz_id = :bizId
+		AND
+			mbb_.biz_category = :bizCategory
+		]]>
+	</sql>	
+	
+	<sql id="query">
+		<![CDATA[
+    	SELECT 
+    		mbb_.*
+    	FROM 
+    		t_match_biz_base mbb_
+		WHERE
+			1=1
+		<#if port?exists>
+			AND mbb_.biz_bill_day = :port
+		</#if> 	
+		<#if id?exists>
+    		AND mbb_.match_biz_base_id = :id
+		</#if> 
+		<#if status?exists>
+			AND mbb_.data_status IN (:status)
+		</#if> 
+		<#if category?exists>
+			AND mbb_.biz_category = :category
+		</#if> 
+		<#if exe?exists>
+			AND mbb_.data_index = :exe
+		</#if> 
+		]]>
+	</sql>
+	<sql id="queryManageFee">
+		<![CDATA[
+	    SELECT
+			mbb.biz_code lenderCode,
+			mbb.cust_name custName,
+			mbb.id_card idCard,
+			cal.accountLevelName accountLevelName,
+			p.product_name productName,
+			f.account_management_fee accountManagementFee,
+			cf.sub_bank bankName,
+			cf.bank_category bankCategory,
+			cf.account_name accountName,
+			cf.account_num accountNum,
+			l.org_id orgId,
+			f.report_day reportDay
+		FROM
+			t_match_biz_base mbb
+		LEFT JOIN t_investment_pool ip ON mbb.match_biz_base_id = ip.match_biz_base_id
+		LEFT JOIN t_investment_fund f ON ip.investment_pool_id = f.investment_pool_id
+		LEFT JOIN t_product p ON p.product_id = mbb.biz_product_id
+		LEFT JOIN t_cust_finance cf ON cf.lender_apply_id = mbb.biz_id
+		LEFT JOIN t_lender_apply l ON l.lender_apply_id = mbb.biz_id
+		LEFT JOIN (
+			SELECT
+					mu_.match_cust_id_card idCard,
+					al_.account_level_name accountLevelName,
+					al_.service_rate_month serviceRate
+				FROM
+					t_account_level_log all_
+				LEFT JOIN t_account_level al_ ON all_.account_level_id = al_.account_level_id
+				LEFT JOIN t_match_user mu_ ON all_.cust_code = mu_.match_cust_code
+				LEFT JOIN (
+					SELECT
+						COUNT(ip_.investment_pool_id) invest_count,
+						ip_.match_user_id match_user_id
+					FROM
+						t_investment_pool ip_
+					WHERE
+						ip_.data_status IN ('O','S','P')
+					GROUP BY
+						ip_.match_user_id
+				) ip_e_ ON ip_e_.match_user_id = mu_.match_user_id
+				WHERE
+					all_.is_current = 1
+				AND ip_e_.invest_count > 0 ) cal on cal.idCard = mbb.id_card
+			WHERE
+				mbb.biz_product_id IN (11, 12 ,34)
+				AND mbb.data_status NOT IN ('T', 'F', 'M')
+				AND mbb.biz_category = 2
+				AND (
+					CASE 
+						f.current_period
+					WHEN 
+						1
+					AND mbb.biz_product_id <> 34
+					THEN
+						f.account_management_fee = 0
+					ELSE 
+						f.account_management_fee >0 
+					END
+				)
+				<#if billDay?exists && billDay!="-1" && (!statisticDate?exists || statisticDate=="")>	
+					AND DATE_FORMAT(f.report_day,'%Y-%m-%d') LIKE CONCAT('%',:billDay)
+				</#if>
+				<#if (!billDay?exists || billDay=="-1") && (statisticDate?exists && statisticDate!="")>	
+					AND DATE_FORMAT(f.report_day,'%Y-%m-%d') LIKE CONCAT(:statisticDate,'%')
+				</#if>
+				<#if (billDay?exists && billDay!="-1")&& statisticDate?exists && statisticDate!="">	
+					AND DATE_FORMAT(f.report_day,'%Y-%m-%d') = CONCAT(:statisticDate,'-',:billDay)
+				</#if>
+				<#if lenderCode?exists && lenderCode!="">	
+					AND mbb.biz_code = :lenderCode
+				</#if>
+				AND cf.account_category = 2
+				ORDER BY mbb.cust_name
+		]]>
+	</sql>		
+</sqlMap>	  		

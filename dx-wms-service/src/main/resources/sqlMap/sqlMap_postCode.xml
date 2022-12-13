@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="postCode">
+
+	<sql id="queryByOrgId">
+		<![CDATA[
+		SELECT
+			t_post_code_id,
+			t_org_code,
+			t_org_name,
+			t_post_category,
+			post_code,
+			remark,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			date_status
+		FROM
+			t_post_code
+		WHERE
+			date_status = 'A'
+		AND
+			t_post_category = 1
+		AND
+			t_org_code = :orgCode
+    	]]>
+	</sql>
+
+	<sql id="queryAll">
+		<![CDATA[
+		SELECT
+			t_post_code_id,
+			t_org_code,
+			t_org_name,
+			t_post_category,
+			post_code,
+			remark,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			date_status
+		FROM
+			t_post_code
+		WHERE
+			date_status = 'A'
+    	]]>
+	</sql>
+</sqlMap>	  		

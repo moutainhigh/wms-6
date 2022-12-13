@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="report">
+	<sql id="firstMatchReport">
+		<![CDATA[
+		SELECT
+			ip_.product_id productId,
+			ip_.init_match_time matchDate,
+			ip_.init_total_amount initTotalAmount,
+			mr_sum_.nextRepayAmount nextRepayAmount
+		FROM
+		t_investment_pool ip_
+		LEFT JOIN (
+			SELECT
+				SUM(
+					mr_.transfer_ea_capital_amount
+				) nextRepayAmount,
+				mr_.investment_pool_id investment_pool_id
+			FROM
+				t_match_result mr_
+			WHERE
+				mr_.data_status = 'A'
+			AND mr_.current_period = 1
+			GROUP BY
+				mr_.investment_pool_id
+		) mr_sum_ ON ip_.investment_pool_id = mr_sum_.investment_pool_id
+		WHERE
+			1=1
+		<#if bizCode?exists && bizCode!="">
+			AND ip_.match_biz_base_id = :matchBizBaseId
+		</#if>		
+		]]>
+	</sql>
+	<sql id="firstMatchReportDetail">
+		<![CDATA[
+		SELECT
+			cp.creditor_pool_id creditorId,
+			mbb.cust_name name,
+			mbb.id_card idCard,
+			mr.transfer_total_amount transferAmount,
+			mr.transfer_total_amount equalsAmount,
+			mbb.biz_attr bizAttr,
+			cp.init_bill_date beginDate,
+			cp.init_period period,
+			cp.remain_period remainPeriod,
+			cp.rate_year rateYear
+		FROM
+			t_match_result mr
+		LEFT JOIN 
+			t_creditor_pool cp 
+		ON 
+			mr.creditor_pool_id = cp.creditor_pool_id
+		LEFT JOIN 
+			t_match_biz_base mbb 
+		ON 
+			cp.match_biz_base_id = mbb.match_biz_base_id
+		WHERE
+			mr.current_period = 1
+		AND
+			mr.data_status = 'A'
+		AND
+			mr.investment_pool_id = :poolId	
+		]]>
+	</sql>
+	<sql id="queryParam">
+		<![CDATA[
+		SELECT
+			mbb_.cust_name custName,
+			mbb_.zip_code zip,
+			mbb_.cust_address address,
+			all_.account_level_id accountLevelId,
+			al_.account_level_name accountLevelName,
+			mbb_.match_biz_base_id matchBizBaseId
+		FROM
+			t_match_biz_base mbb_ 
+		LEFT JOIN t_account_level_log all_ ON mbb_.cust_code = all_.cust_code 
+		LEFT JOIN t_account_level al_ ON all_.account_level_id = al_.account_level_id
+		WHERE
+			mbb_.biz_category = 2
+		<#if bizCode?exists && bizCode!="">
+			AND	mbb_.biz_code = :bizCode
+		</#if>	
+		]]>
+	</sql>
+</sqlMap>	

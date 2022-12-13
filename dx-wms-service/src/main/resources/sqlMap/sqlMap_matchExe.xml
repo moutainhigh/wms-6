@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchExe">
+	<sql id="queryByPage">
+		<![CDATA[
+			SELECT
+				mbb.biz_code lenderCode,
+				mbb.cust_name custName,
+				ip.match_user_id matchUserId,
+				ip.match_user_count matchUserCount,
+				ip.init_total_amount initTotalAmount,
+				ip.current_total_amount currentTotalAmount,
+				ip.current_done_amount currentDoneAmount,
+				ip.current_undo_amount currentUndoAmount,
+				ip.init_ea_amount iniEaAmount,
+				ip.init_ea_amount_max initEaAmountMax,
+				ip.create_time enterDate,
+				ip.data_status dataStatus,
+				ip.investment_pool_id poolId,
+				ip.bill_day billDay,
+				mbb.match_biz_base_id bizId,
+				ip.product_id productId,
+				mbb.biz_id lenderApplyId,
+				ip.current_period currentPeriod,
+				ip.init_period initPeriod
+			FROM
+				t_investment_pool ip
+			LEFT JOIN 
+				t_match_biz_base mbb 
+			ON 
+				ip.match_biz_base_id = mbb.match_biz_base_id
+			WHERE 
+				1=1
+			<#if lenderCode?exists && lenderCode!="">
+				AND mbb.biz_code = :lenderCode
+			</#if>
+			<#if enterDateBegin?exists && enterDateBegin!="">
+				AND ip.create_time >= :enterDateBegin
+			</#if>
+			<#if enterDateEnd?exists && enterDateEnd!="">
+				AND ip.create_time <= :enterDateEnd
+			</#if>
+			<#if dataStatus?exists && dataStatus!="">
+				AND ip.data_status = :dataStatus
+			</#if>
+			ORDER BY ip.create_time DESC
+		]]>
+	</sql>
+	
+	<sql id="getByParam">
+        <![CDATA[
+            SELECT
+				cp.creditor_pool_id creditorPoolId,
+				mu.match_cust_name creditorName,
+				mu.match_user_id creditorUserId,
+				cp.current_undo_amount currentUndoAmount,
+				cp.current_total_amount currentTotalAmount,
+				cp.current_done_amount currentDoneAmount,
+				cp.match_day matchDay,
+				cp.init_bill_date billDate,
+				cp.init_ea_amount_rem initEaAmountRem,
+				cp.init_ea_amount_max initEaAmountMax,	
+				cp.init_ea_bill_amount initEaBillAmount,
+				cp.init_period initPeriod,
+				cp.init_ea_amount initEaAmount,
+				cp.rate_month rateMonth,
+				cp.init_total_amount initTotalAmount,
+				cp.product_id productId,
+				cp.rate_year rateYear,
+				cp.remain_period remainPeriod
+			FROM
+				t_creditor_pool cp
+			LEFT JOIN 
+				t_match_user mu 
+			ON 
+				cp.match_user_id = mu.match_user_id
+			WHERE 
+				cp.data_status IN ('A','P')
+			AND cp.current_undo_amount > 0	
+			<#if billDay?exists && billDay!="">	
+			AND 
+				cp.match_day = :billDay
+			</#if>
+			<#if relationUsers?exists>	
+				AND cp.match_user_id NOT IN (:relationUsers)
+			</#if>
+        ]]>
+	</sql>
+	<sql id="getMatchTotal">
+        <![CDATA[
+            SELECT
+				SUM(cp.init_ea_amount_max) totalMatch
+			FROM
+				t_creditor_pool cp
+			WHERE 
+				cp.data_status = 'A'
+			<#if billDay?exists && billDay!="">	
+			AND 
+				cp.match_day = :billDay
+			</#if>
+			<#if matchAmount?exists && matchAmount!="">		
+				AND cp.current_undo_amount >= :matchAmount
+			</#if>
+			<#if relationUsers?exists>	
+				AND cp.match_user_id NOT IN (:relationUsers)
+			</#if>
+        ]]>
+	</sql>
+</sqlMap>	    	

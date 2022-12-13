@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="investmentPool">
+	<!-- 根据主键ID查询 -->
+	>
+	<sql id="queryById">
+        <![CDATA[
+            SELECT
+                ip_.*
+            FROM
+                t_investment_pool ip_
+            WHERE
+                ip_.investment_pool_id = :id
+            AND 
+            	ip_.data_status != 'D'    
+        ]]>
+	</sql>
+	<sql id="query">
+        <![CDATA[
+            SELECT
+                ip_.*
+            FROM
+                t_investment_pool ip_
+            WHERE
+            	ip_.data_status != 'D'
+            <#if baseId?exists && baseId!="">
+            	AND ip_.match_biz_base_id = :baseId
+            </#if>                
+        ]]>
+	</sql>
+	<sql id="queryArray">
+        <![CDATA[
+            SELECT
+				ip_.*,
+				mbb_.biz_code lenderCode
+			FROM
+				t_investment_pool ip_ LEFT JOIN t_match_biz_base mbb_
+			ON ip_.match_biz_base_id = mbb_.match_biz_base_id
+			WHERE
+				1 = 1
+			<#if productId?exists && productId!="">
+				AND ip_.product_id = :productId 
+			</#if>
+            <#if port?exists && port!="99">
+            	AND ip_.bill_day = :port
+            </#if>   
+            <#if ids?exists && (ids?size>0)>
+            	AND ip_.investment_pool_id IN (:ids)
+            	AND ip_.data_status != 'D'
+            </#if>  
+            <#if status?exists && (status?size>0)> 
+            	AND ip_.data_status IN (:status) 
+            </#if> 	   
+        ]]>
+	</sql>
+	<sql id="queryAll">
+        <![CDATA[
+            SELECT
+                ip_.*
+            FROM
+                t_investment_pool ip_
+            WHERE
+            	ip_.data_status != 'D'    
+        ]]>
+	</sql>
+</sqlMap>

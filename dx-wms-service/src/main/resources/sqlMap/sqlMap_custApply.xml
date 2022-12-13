@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="custApply">
+
+	<!-- 根据页面查询 -->
+	<sql id="queryForPage">
+	<![CDATA[
+		SELECT
+			la.lender_code lenderCode,
+			ca.cust_account_id custAccountId,
+			ca.id_card idCard,
+			ca.cust_name custName,
+			ca.mobile mobile,
+			ca.open_date openDate,
+			ca.create_user createUser,
+			ca.create_time createTime,
+			ca.team_id teamId,
+			ca.org_id orgId,
+			ca.update_user updateUser,
+			ca.update_time updateTime,
+			ca.data_status dataStatus,
+			la.lender_apply_id lenderApplyId,
+			la.pay_way_id payWayId,
+			la.product_id productId,
+			la.lender_amount lenderAmount,
+			la.sign_date signDate,
+			la.settlement_date settlementDate,
+			la.form_status formStatus,
+			la.parent_id parentId
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+		WHERE
+			1 = 1
+		AND la.data_status = 'A'
+		AND (
+			la.form_status IN ('11','13') OR la.form_status IS NULL 
+			<#if proIns?exists >
+				OR (la.proc_ins_id IN (:proIns) AND la.form_status IN ('11','13'))
+			</#if> 
+		)
+	 	<#if custAccountId?exists && custAccountId!="">
+    		AND ca.cust_account_id = :custAccountId
+   	 	</#if> 
+        <#if idCard?exists && idCard!="">
+         	AND ca.id_card = :idCard
+       	</#if> 
+       	<#if custName?exists && custName!="">
+           	AND ca.cust_name LIKE CONCAT ('%',:custName,'%')
+        </#if> 
+        <#if mobile?exists && mobile!="">
+            AND ca.mobile = :mobile
+        </#if> 
+        <#if openDate?exists && openDate!="">
+            AND ca.open_date = :openDate
+        </#if> 
+        <#if userId?exists && userId!="">
+            AND la.create_user = :userId
+        </#if> 
+        <#if updateUser?exists && updateUser!="">
+            AND la.update_user = :updateUser
+        </#if> 
+        <#if dataStatus?exists && dataStatus!="">
+            AND la.data_status = :dataStatus
+        </#if> 
+        <#if signDateBegin?exists && signDateBegin!="">
+         	 AND la.sign_date >= :signDateBegin
+        </#if>
+        <#if signDateEnd?exists && signDateEnd!="">
+            AND la.sign_date <= :signDateEnd
+        </#if>
+        <#if productId?exists && productId!="">
+            AND la.product_id = :productId
+        </#if>
+   	 	<#if lenderCode ?exists && lenderCode!="">
+            AND la.lender_code = :lenderCode
+        </#if> 
+        <#if minAmountArea ?exists && maxAmountArea ?exists >
+        	AND la.lender_amount >= :minAmountArea and la.lender_amount<= :maxAmountArea
+        </#if>
+        <#if orgId ?exists && orgId !="">
+          	AND ca.org_id = :orgId 
+       	</#if>
+      	 	ORDER BY la.create_time DESC
+       	]]>
+	</sql>
+	<sql id="queryInvestForPage">
+	<![CDATA[
+		SELECT
+			    la.cust_account_id,
+			    ca.id_card,
+			    ca.cust_name,
+			    ca.mobile,
+			    la.team_id,
+			    la.org_id,
+			    la.form_status,
+			    ca.create_user,
+			    ca.create_time,
+			    ca.update_user,
+			    ca.update_time,
+			    ca.data_status,
+			    la.lender_code,
+			    la.lender_cust_code,
+			    la.lender_apply_id,
+			    la.product_id,
+			    la.lender_amount,
+			    la.sign_date,
+			    la.settlement_date
+			FROM
+			    t_lender_apply la
+			LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+			
+			WHERE
+			    1 = 1
+			AND  la.data_status = 'A'  
+			AND la.form_status IN (14,15,17,18,19,20,21,22,23) 
+			<#if createUser?exists && createUser!="">
+             AND la.create_user = :createUser
+             </#if> 
+             <#if orgId?exists && orgId!="">
+             AND la.org_id = :orgId
+             </#if> 
+	         <#if idCard?exists && idCard!="">
+	         AND ca.id_card = :idCard
+	       	 </#if> 
+	       	 <#if custName?exists && custName!="">
+             AND ca.cust_name = :custName
+             </#if> 
+             <#if lenderCode ?exists && lenderCode!="">
+             AND la.lender_code = :lenderCode
+             </#if> 
+             <#if mobile?exists && mobile!="">
+             AND ca.mobile = :mobile
+             </#if> 
+             <#if custManager ?exists && custManager!="">
+             AND ca.create_user = :custManager
+             </#if> 
+             <#if productId ?exists && productId!="">
+             AND la.product_id = :productId
+             </#if> 
+             <#if signDateBegin?exists && signDateBegin!="">
+           	 AND la.sign_date >= :signDateBegin
+           	 </#if>
+             <#if signDateEnd?exists && signDateEnd!="">
+             AND la.sign_date <= :signDateEnd
+             </#if>
+             <#if currentStep?exists && currentStep !="">
+             AND la.form_status = :currentStep
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=="1">
+             AND la.lender_amount >=50000 and la.lender_amount<=100000
+             </#if> 
+             <#if lenderAmountArea ?exists && lenderAmountArea=="2">
+             AND la.lender_amount >100000 and la.lender_amount<=200000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=="3">
+             AND la.lender_amount >200000 and la.lender_amount<=500000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=="4">
+             AND la.lender_amount >500000 and la.lender_amount<=1000000
+             </#if>
+             <#if lenderAmountArea ?exists && lenderAmountArea=="5">
+             AND la.lender_amount >1000000 
+             </#if>
+             ORDER BY ca.create_user ASC,la.lender_code ASC
+            ]]>
+	</sql>
+
+	<sql id="queryDueListForPage">
+		<![CDATA[
+			SELECT
+				la.lender_code lenderCode,
+				ca.cust_account_id,
+				ca.id_card,
+				ca.cust_name,
+				ca.mobile,
+				ca.open_date,
+				ca.create_user,
+				ca.create_time,
+				ca.team_id,
+				ca.org_id,
+				ca.update_user,
+				ca.update_time,
+				ca.data_status,
+				la.lender_apply_id,
+				la.pay_way_id,
+				la.product_id,
+				la.lender_amount,
+				la.sign_date,
+				la.settlement_date,
+				la.form_status,
+				la.due_date,
+				la.parent_id,
+				la.proc_ins_id,
+				la.due_status
+			FROM
+				t_lender_apply la
+			LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+			WHERE
+				1 = 1
+			AND la.data_status = 'A'
+			AND la.lender_apply_id IN (:dueApplyIds)
+		 	<#if custAccountId?exists && custAccountId!="">
+	       	 	AND ca.cust_account_id = :custAccountId
+	   	 	</#if> 
+	 		<#if idCard?exists && idCard!="">
+	         	AND ca.id_card = :idCard
+	   	 	</#if> 
+	   	 	<#if custName?exists && custName!="">
+	        	AND ca.cust_name LIKE CONCAT ('%',:custName,'%')
+	        </#if> 
+	     	<#if mobile?exists && mobile!="">
+	            AND mobile = :mobile
+	        </#if> 
+	        <#if createUser?exists && createUser!="">
+	            AND la.create_user = :createUser
+	        </#if> 
+	        <#if userId?exists && userId!="">
+	            AND la.create_user = :userId
+	        </#if> 
+	        <#if settlementDateBegin?exists && settlementDateBegin!="">
+	          	 AND la.settlement_date >= :settlementDateBegin
+	        </#if>
+	        <#if settlementDateEnd?exists && settlementDateEnd!="">
+	            AND la.settlement_date <= :settlementDateEnd
+	       	</#if>
+	        <#if productId?exists && productId!="">
+	            AND la.product_id = :productId
+	        </#if>
+	       	<#if lenderCode ?exists && lenderCode!="">
+	            AND la.lender_code = :lenderCode
+	        </#if> 
+	        <#if minAmountArea ?exists && maxAmountArea ?exists >
+        		AND la.lender_amount >= :minAmountArea and la.lender_amount<= :maxAmountArea
+        	</#if>
+	        <#if orgId ?exists && orgId !="">
+	             AND ca.org_id = :orgId 
+	        </#if>
+	   	 	ORDER BY la.settlement_date DESC,
+	       	 		 la.lender_code ASC
+        ]]>
+	</sql>
+
+	<sql id="queryDueList">
+	<![CDATA[
+		SELECT
+			ca.cust_name
+		FROM
+			t_lender_apply la
+		LEFT JOIN t_cust_account ca ON la.cust_account_id = ca.cust_account_id
+		WHERE
+			1 = 1
+		AND la.data_status = 'A'
+		AND la.lender_apply_id IN (:dueApplyIds)
+		AND (la.due_status is null 
+		OR la.due_status = '0')
+		 <#if userId?exists && userId!="">
+	          AND la.create_user = :userId
+	     </#if> 
+           	 ORDER BY la.settlement_date DESC,
+           	 		  la.lender_code ASC
+            ]]>
+	</sql>
+</sqlMap>	
+      	

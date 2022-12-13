@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="res">
+
+<!-- 根据主键查询 -->
+	<sql id="queryById">
+		<![CDATA[
+		SELEC
+			res_id,
+			res_name,
+			app_code,
+			res_key,
+			res_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_res
+			WHERE 
+				res_id = :id
+		]]>
+	</sql>	
+	
+<!-- 查询全部 -->
+	<sql id="queryAll">
+		<![CDATA[
+    	SELECT
+    		res_id,
+			res_name,
+			app_code,
+			res_key,
+			res_desc,
+			create_user,
+			create_time,
+			update_user,
+			update_time,
+			data_status
+		FROM t_res
+		]]>
+	</sql>    
+</sqlMap>	

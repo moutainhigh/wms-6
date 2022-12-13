@@ -1,0 +1,155 @@
+		.view_top{
+			height:59px;
+			margin:5px auto;	
+		}
+		.view_top .images1{
+			width:224px;
+			display:block;
+			float:right;
+		}
+		.view_nav{
+			height:140px;
+			margin:5px auto;
+		}
+		.view_nav .line1{
+ 			height:1px;
+ 			background:#808080;
+		}
+		.view_nav .number{
+			position:relative;
+			top:30px;
+			left:50px;
+			letter-spacing:20px;
+			font-size:22.0pt;
+			line-height:20px;
+		}
+		.view_nav .address1{
+			letter-spacing:6px;
+			font-size:10.5pt;
+			line-height:20px;
+		}
+		.view_nav .address2{
+			letter-spacing:6px;			
+		}
+		.view_nav .receiver{
+			position:relative;
+			top:33px;
+			left:50px;
+			font-size:10.5pt;
+		}
+		.view_nav .receiver .accept{
+			position:relative;
+			left:80px;
+		}
+		.view_content{
+			margin:0 auto;	
+		}
+		.view_content .title1{
+			font-weight:bold;
+			font-size:16.0pt;
+			text-align:center;
+		}
+		.view_content .hello{
+			font-size:10.5pt;
+			text-indent:2em;
+		}
+		.view_content .hello .underline1{
+			text-decoration:underline;	
+		}
+		.view_box{
+			border:1px solid black;
+			width:770px;;
+			margin:0 auto;
+		}
+		.view_box .table1{
+			width:100%;
+			border-collapse:collapse;	
+		}
+		.table1 td, .table1 th{
+			border:1px solid black;
+			text-align:center;
+			padding:3px;
+		}
+		.view_content .title2{
+			font-weight:bold;
+			text-align:center;
+		}
+		.view_content .assignor{
+			font-size:9.0pt;
+			text-indent:2em;	
+		}
+		.view_content  .assignor .receiver{
+			position:relative;
+			left:350px;
+			text-align:right;
+		}
+		.view_content .idCode1{
+			font-size:9.0pt;
+			text-indent:2em;	
+		}
+		.view_content  .idCode1 .idCode2{
+			position:relative;
+			left:306px;
+			text-align:right;
+		}
+		.view_box2{
+			border:1px solid black;
+			width:770px;;
+			margin:0 auto;
+		}
+		.view_box2 .table2{
+			width:100%;
+			border-collapse:collapse;	
+		}
+		.table2 td, .table2 th{
+			border:1px solid black;
+			text-align:center;
+			padding:3px;
+		}
+		.view_content .title3{
+			font-weight:bold;
+			text-align:center;
+		}
+		.view_content .statement{
+			line-height:10px;
+			font-size:10.5pt;
+			text-indent:2em;
+		}
+		.view_content .statement .underline2{
+			text-decoration:underline;	
+		}
+		.view_content .money{
+			line-height:10px;
+			font-size:10.5pt;
+			text-indent:2em;
+		}
+		.view_content .money .underline3, #content .money .underline4{
+			text-decoration:underline;	
+		}
+		.view_content .title4, #content .title5, #content .title6{
+			line-height:25px;
+			font-weight:bold;
+			text-indent:20em;
+			
+		}
+		.view_content .assignor2{
+			text-indent:15em;	
+		}
+		.view_content  .assignor2 .witness{
+			position:relative;
+			left:150px;
+			
+		}
+		.view_content .dottedLine{
+			height:1px;
+			width:100%;
+			border-bottom:1px dashed;
+		}
+		.view_foot{
+			margin:40px auto;
+		}
+		.view_foot .company{
+		 	color:#ddd;
+		 	text-align:right;
+		 	line-height:70px;	
+		}

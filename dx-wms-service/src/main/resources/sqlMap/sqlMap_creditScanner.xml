@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap namespace="creditScanner">
+	<!-- 根据主键ID查询 -->
+	<sql id="queryById">
+        <![CDATA[
+            SELECT
+                *
+            FROM
+                t_creditor_pool cp
+            WHERE
+                cp.creditor_pool_id = :id
+            AND 
+            	cp.data_status != 'D'    
+        ]]>
+	</sql>
+</sqlMap>

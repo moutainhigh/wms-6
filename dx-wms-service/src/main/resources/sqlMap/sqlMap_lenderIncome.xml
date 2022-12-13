@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderIncome">
+
+    <!-- 根据主键查询 -->
+    <sql id="queryByLenderApplyId">
+    <![CDATA[
+       SELECT
+		    lender_income_id,
+		    lender_apply_id,
+		    lender_income_ratio,
+		    lender_income_remark,
+		    create_user,
+		    create_time,
+		    update_user,
+		    update_time,
+		    data_status
+		FROM
+		    t_lender_income
+		WHERE
+		    lender_apply_id = :lenderApplyId
+		    AND data_status = 'A'
+        ]]>
+    </sql>
+    
+     <!-- 根据主键查询 -->
+    <sql id="queryById">
+    <![CDATA[
+       SELECT
+            lender_income_id,
+            lender_apply_id,
+            lender_income_ratio,
+            lender_income_remark,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            data_status
+        FROM
+            t_lender_income
+        WHERE
+            lender_income_id = :id
+            AND data_status = 'A'
+        ]]>
+    </sql>
+    
+    
+</sqlMap>   

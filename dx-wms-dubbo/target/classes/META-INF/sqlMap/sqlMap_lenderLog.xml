@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="lenderLog">
+
+	<sql id="queryAccount">
+		<![CDATA[
+			SELECT
+				lal_.*
+			FROM
+				t_lender_apply_log lal_
+			LEFT JOIN t_lender_apply la_ ON lal_.lender_apply_id = la_.lender_apply_id
+			LEFT JOIN t_cust_account ca_ ON la_.cust_account_id = ca_.cust_account_id
+			WHERE
+				lal_.is_current = 1
+			AND 
+				lal_.data_status = 'A'
+			AND
+				ca_.cust_account_id = :accountId
+		]]>
+	</sql>
+	
+	<!-- 查询某单理财申请最新的日志 -->
+	<sql id="queryCurrent">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+			ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.lender_apply_id = :applyId
+		]]>
+	</sql>
+	
+	<sql id="queryByStepAndApply">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :applyId
+			AND ll.data_status = 'A'
+			AND ll.current_step_key = :step
+			ORDER BY
+				ll.lender_apply_log_id DESC
+		]]>
+	</sql>
+	
+	<!-- 获取某理财申请的最早的质检日志 -->
+	<sql id="queryLast">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.approve_comment,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :applyId
+			AND ll.data_status = 'A'
+			AND ll.current_step_key = 'qualityCheck'
+			ORDER BY
+				ll.create_time ASC
+			LIMIT 0,1
+		]]>
+	</sql>
+	
+	<sql id="queryByStep">
+		<![CDATA[
+			SELECT
+				ll.lender_apply_log_id,
+				ll.lender_apply_id,
+				ll.from_user,
+				ll.to_user,
+				ll.is_current,
+				ll.current_step,
+				ll.current_step_key,
+				ll.current_action,
+				ll.create_time,
+				ll.create_user,
+				ll.update_time,
+				ll.update_user,
+				ll.approve_comment,
+				ll.data_status,
+				ll.last_action,
+				ll.last_step_key
+			FROM
+				t_lender_apply_log ll
+			WHERE
+				ll.lender_apply_id = :applyId
+			AND ll.data_status = 'A'
+			AND ll.is_current = '1'
+			AND ll.current_step_key = :step
+			ORDER BY
+				ll.lender_apply_log_id DESC
+		]]>
+	</sql>
+</sqlMap>	  

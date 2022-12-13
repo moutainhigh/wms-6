@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd   
+    http://www.springframework.org/schema/context   
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd "
+	default-autowire="byName">
+	<!-- 配置connectionFactory -->
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL">
+					<value>${component.activemq.broker.url}</value>
+				</property>
+			</bean>
+		</property>
+		<property name="maxConnections">
+			<value>${component.activemq.broker.maxconn}</value>
+		</property>
+	</bean>
+	<!-- JMS PTP MODEL -->
+	<!-- 定义消息队列 -->
+	<bean id="producer" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="cmm.p2p.queue" />
+	</bean>
+	<!-- PTP jms模板 -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsFactory" />
+		<property name="defaultDestination" ref="producer" />
+		<property name="pubSubDomain" value="false" />
+	</bean>
+	<!-- 消息发送方 -->
+	<bean id="messageSender" class="com.dx.framework.mq.send.MessageSender" />
+
+	<bean id="ruleReceiverQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="cmm.p2p.queue" />
+	</bean>
+
+	<!-- 消息接收方 -->
+	<bean id="ruleReceiver" class="com.dx.framework.mq.receive.MessageReceiver">
+		<property name="messageInvoke" ref="ruleMessageInvoke" />
+	</bean>
+
+	<!-- 消息监听容器 -->
+	<bean id="rulelistenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsFactory" />
+		<property name="destination" ref="ruleReceiverQueue" />
+		<property name="messageListener" ref="ruleReceiver" />
+	</bean>
+
+	<bean id="amReceiverQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="wms.p2p.queue" />
+	</bean>
+	<!-- 消息接收方 -->
+	<bean id="amReceiver" class="com.dx.framework.mq.receive.MessageReceiver">
+		<property name="messageInvoke" ref="amMessageInvoke" />
+	</bean>
+
+	<!-- 消息监听容器 -->
+	<bean id="amlistenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsFactory" />
+		<property name="destination" ref="amReceiverQueue" />
+		<property name="messageListener" ref="amReceiver" />
+	</bean>
+</beans>	

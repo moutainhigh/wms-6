@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="fundView">
+
+	<sql id="queryInvests">
+		<![CDATA[
+			SELECT
+				mbb.zip_code zipCode,
+				mbb.cust_address custAddress,
+				mbb.cust_name custName,
+				mbb.biz_code lenderCode,
+				mbb.biz_total_amount initTotalAmount,
+				mbb.biz_product_id productId,
+				ip.investment_pool_id poolId,
+				cal.service_rate_month accountManageRate,
+				cal.accountLevelName accountLevel,
+				la.settlement_date initLoanDay,
+				if_.report_day reportDay,
+				if_.current_period currentPeriod,
+				if_.account_management_fee income,
+				if_.lender_income_amount accountManageAmount,
+				if_.next_interest_total_amount nextInterestTotalAmount,
+				if_.next_princal_total_amount nextPrincalTotalAmount,
+				if_.next_repayment_total_amount nextRepaymentTotalAmount,
+				if_.next_transfer_total_amount nextTransferTotalAmount
+			FROM
+				t_match_biz_base mbb
+			LEFT JOIN t_investment_pool ip ON mbb.match_biz_base_id = ip.match_biz_base_id
+			LEFT JOIN t_investment_fund if_ ON ip.investment_pool_id = if_.investment_pool_id
+			LEFT JOIN t_lender_apply la ON la.lender_code = mbb.biz_code
+			LEFT JOIN (
+				SELECT
+					mu_.match_cust_id_card idCard,
+					al_.account_level_name accountLevelName,
+					alr.service_rate_month
+				FROM
+					t_account_level_log all_
+				LEFT JOIN t_account_level al_ ON all_.account_level_id = al_.account_level_id
+				LEFT JOIN t_match_user mu_ ON all_.cust_code = mu_.match_cust_code
+				LEFT JOIN (
+					SELECT
+						COUNT(ip_.investment_pool_id) invest_count,
+						ip_.match_user_id match_user_id,
+						ip_.version_key
+					FROM
+						t_investment_pool ip_
+					WHERE
+						ip_.data_status IN ('O', 'S', 'P')
+					GROUP BY
+						ip_.match_user_id
+				) ip_e_ ON ip_e_.match_user_id = mu_.match_user_id
+				LEFT JOIN t_account_level_rate alr ON alr.account_level_id = al_.account_level_id
+				AND alr.vesion_key = ip_e_.version_key
+				WHERE
+					all_.is_current = 1
+				AND ip_e_.invest_count > 0
+			) cal ON mbb.id_card = cal.idCard
+			WHERE
+				mbb.data_status NOT IN ('T', 'F', 'M')
+			AND mbb.biz_category = 2
+			<#if reportDay?exists && reportDay!="">
+			AND if_.report_day = :reportDay
+			</#if>
+			<#if lenderCode?exists && lenderCode!="">
+			AND mbb.biz_code = :lenderCode
+			</#if>
+		]]>
+	</sql>
+	
+	<sql id="queryFund">
+        <![CDATA[
+			SELECT	
+				f.next_transfer_total_amount nextTransferTotalAmount,
+				f.account_management_fee accountManagementFee,
+				f.lender_income_amount lenderIncomeAmount
+			FROM
+				t_match_biz_base mbb
+			LEFT JOIN t_investment_pool ip ON mbb.match_biz_base_id = ip.match_biz_base_id
+			LEFT JOIN t_investment_fund f ON f.investment_pool_id = ip.investment_pool_id
+			WHERE
+				mbb.biz_category = 2
+			AND mbb.data_status NOT IN ('T', 'F', 'M')
+			<#if reportDay?exists && reportDay!="">
+				AND f.report_day = :reportDay
+			</#if>
+			<#if poolId?exists && poolId!="">
+				AND ip.investment_pool_id = :poolId
+			</#if>
+        ]]>
+	</sql>
+	
+</sqlMap>	

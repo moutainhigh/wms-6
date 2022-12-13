@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="creditorFund">
+
+	<sql id="queryByParam">
+		<![CDATA[
+		SELECT
+			*
+		FROM 
+			t_creditor_fund
+		WHERE
+			data_status = 'A' 
+		<#if poolId?exists && poolId!="">
+			AND	creditor_pool_id = :poolId
+		</#if> 
+		<#if isCurrent?exists && isCurrent!="">	
+			AND is_current = :isCurrent	
+		</#if> 
+		<#if currentPeriod?exists && currentPeriod!="">	
+			AND current_period = :currentPeriod	
+		</#if> 
+		<#if reportDay?exists && reportDay!="">	
+			AND report_day = :reportDay	
+		</#if> 
+    	]]>
+	</sql>
+	<sql id="queryAll">
+        <![CDATA[
+        SELECT
+			cf_.*, cp_.init_bill_date
+		FROM
+			t_creditor_fund cf_
+		LEFT JOIN t_creditor_pool cp_ ON cf_.creditor_pool_id = cp_.creditor_pool_id
+		WHERE
+			cf_.data_status != 'D'
+        ]]>
+	</sql>
+	<sql id="queryByPoolId">
+		<![CDATA[
+		SELECT
+			*
+		FROM 
+			t_creditor_fund
+		WHERE
+			1=1 
+		<#if poolId?exists && poolId!="">
+			AND	creditor_pool_id = :poolId
+		</#if>  
+		ORDER BY 
+			current_period 
+		ASC
+    	]]>
+	</sql>
+</sqlMap>	

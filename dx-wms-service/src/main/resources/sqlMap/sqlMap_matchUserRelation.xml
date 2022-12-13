@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="matchUserRelation">
+
+	<sql id="query">
+		<![CDATA[
+		SELECT
+        	mur_.*
+    	FROM
+			t_match_user_relation mur_
+		WHERE
+			mur_.data_status = 'A'
+		<#if investUser?exists && investUser!="">
+			AND	mur_.investment_user_id = :investUser
+		</#if>
+		<#if creditUser?exists && creditUser!="">
+			AND	mur_.creditor_user_id = :creditUser
+		</#if>
+    	]]>
+	</sql>	
+</sqlMap>	

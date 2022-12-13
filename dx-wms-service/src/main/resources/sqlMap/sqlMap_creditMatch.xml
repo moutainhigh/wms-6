@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqlMap namespace="creditMatch">
+
+	<sql id="queryCredit">
+		<![CDATA[
+		SELECT
+			cp_.creditor_pool_id poolId,
+			cp_.product_id productId,
+			mbb_.cust_name custName,
+			cp_.current_total_amount currentAmount,
+			cp_.current_undo_amount undoAmount,
+			cp_.init_total_amount initAmount,
+			cp_.init_period initPeriod,
+			cp_.remain_period remainPeriod,
+			cp_.rate_year rateYear,
+			cp_.match_day portDay,
+			cp_.match_user_id userId
+		FROM
+			t_creditor_pool cp_
+		LEFT JOIN t_match_biz_base mbb_ ON cp_.match_biz_base_id = mbb_.match_biz_base_id
+		WHERE
+			cp_.data_status IN ('A', 'P')
+		AND cp_.current_undo_amount > 0.00
+		AND cp_.remain_period > 0
+		<#if repayDay?exists && repayDay!="-1">
+			AND cp_.match_day = :repayDay
+		</#if>	
+		<#if filterAmountFrom?exists && filterAmountFrom!="">	
+			AND cp_.current_undo_amount >= :filterAmountFrom
+		</#if>
+		<#if filterAmountTo?exists && filterAmountTo!="">	
+			AND cp_.current_undo_amount <= :filterAmountTo
+		</#if>
+		<#if poolIds?exists && (poolIds?size>0) >
+			AND cp_.creditor_pool_id NOT IN (:poolIds)
+		</#if>
+		<#if userIds?exists && (userIds?size>0) >
+			AND cp_.match_user_id NOT IN (:userIds)
+		</#if>
+		<#if remainPeriodFrom?exists && remainPeriodFrom!="">	
+			AND cp_.remain_period >= :remainPeriodFrom
+		</#if>
+		<#if remainPeriodTo?exists && remainPeriodTo!="">	
+			AND cp_.remain_period <= :remainPeriodTo
+		</#if>
+		ORDER BY
+			cp_.current_undo_amount
+			<#if sort?exists && sort='ASC' >
+				 ASC
+			</#if>
+			<#if sort?exists && sort='DESC' >
+				 DESC
+			</#if>	
+		]]>
+	</sql>
+</sqlMap>	
